@@ -19,16 +19,16 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'shentest'
-    password = 'shentest'
+    username = 'shentest2'
+    password = 'shentest2'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    babyname = 'shenruyi'
+    babyname = 'shenruyi1'
     babyheight = 1.4
     babyweight = 34
     birthday = '2012-08-08'
     babysex = 'girl'
-    homeaddr = '北京市海淀区万泉河路68号'
+    homeaddr = '北京市海淀区人民大学西门'
     schooladdr = '北京市万泉河路小学'
     url = 'http://localhost:8000/user/register/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
@@ -41,11 +41,11 @@ def testregister():
     fp.close()
     
 def testupdate():
-    username = 'shentest'
-    password = 'shentest'
+    username = 'shentest1'
+    password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    babyname = 'shenruyi'
+    babyname = 'shenruyi2'
     babyheight = 1.4
     babyweight = 34
     birthday = '2012-08-08'
@@ -83,6 +83,6 @@ def testinformationcheck():
     fp.close()
     return r.text
     
-#print(testregister())
+print(testregister())
 #print(testupdate())
-print(testinformationcheck())
+#print(testupdate())

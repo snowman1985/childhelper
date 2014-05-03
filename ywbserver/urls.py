@@ -16,4 +16,5 @@ urlpatterns = patterns('',
     url(r'^user/', include('users.urls')),
     url(r'^weather/', include('weather.urls')),
     url(r'^weixin/', include('weixin.urls')),
+    url(r'^quan/', include('quan.urls')),
 )

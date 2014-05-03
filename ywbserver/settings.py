@@ -59,7 +59,7 @@ INSTALLED_APPS = (
     'consumption',
     'mobile',
     'weather',
-    #'user',
+    'quan',
 )
 
 MIDDLEWARE_CLASSES = (

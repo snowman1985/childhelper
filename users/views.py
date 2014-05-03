@@ -20,7 +20,7 @@ import json, base64, traceback, random
 import datetime,time
 from utils.baidumap import *
 
-@csrf_exempt
+@csrf_exempt   ###保证对此接口的访问不需要csrf
 def check_user_name(username):
     if User.objects.filter(username=username).exists():
         return "exist"
@@ -54,6 +54,7 @@ def register(request):
     baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
     baby.sex = baby_sex
     baby.homeaddr = baby_homeaddr
+    baby.type = 1   ###这个注册用户来自app
     
     #get latitude and longitude from baidumap.and save as a geo point.
     need_circle = False
@@ -68,21 +69,16 @@ def register(request):
             baby.homepoint = None
     else:
         baby.homepoint = None
-        
     baby.schooladdr = baby_schooladdr
     print('user register, add a new baby %s, birthday: %s' % (baby.name, baby.birthday.strftime("%Y-%m-%d")))
-
+# 产生一个新用户:
     user = User.objects.create_user(username = username, password = password)
+    user.baby = baby
     user.save()
-    print(user.id)
-    baby.parent_id = user.id
-    print(baby.parent_id)
     baby.save()
     if need_circle:
         create_circle(user.id, 1, baby.homepoint)
-    
     response = 'False'
-
     if baby is None:
         response = 'False'
     else:
@@ -102,7 +98,7 @@ def update(request):
     baby_homeaddr = request.POST.get('homeaddr')
     baby_schooladdr = request.POST.get('schooladdr')
     print(user)
-    baby = Baby.objects.get(parent_id=user.id)
+    baby = User.objects.get(id=user.id).baby
     print(baby)
     if not baby:
         response = 'Can not found your baby in db.'
@@ -146,13 +142,6 @@ def update(request):
 def informationcheck(request):
     try:
         (authed, username, password, user) = auth_user(request)
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-#         username = http.urlsafe_base64_decode(username)
-#         password = http.urlsafe_base64_decode(password)
-#         username = username.decode()
-#         password = password.decode()
-#         user = auth.authenticate(username = username, password = password)
         if not user:
             return HttpResponse('False')
         else:
@@ -164,19 +153,9 @@ def informationcheck(request):
 def gethomepic(request):
     try:
         (authed, username, password, user) = auth_user(request)
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-#         username = http.urlsafe_base64_decode(username)
-#         password = http.urlsafe_base64_decode(password)
-#         username = username.decode()
-#         password = password.decode()
-#         user = auth.authenticate(username = username, password = password)
         if not user:
             return HttpResponse('AUTH_FAILED')
         else:
-#             ret = {}
-#             ret['pic'] = "hehe.com"
-#             return HttpResponse(json.dumps(ret, ensure_ascii=False))
             piclink = "http://wjbb.cloudapp.net/homepic/%d.jpg"%random.randint(0,9)
             print(request.get_host())
             return HttpResponse(piclink)

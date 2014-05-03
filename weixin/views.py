@@ -15,11 +15,12 @@ from datetime import datetime
 
 from knowledge.models import *
 from shop.models import *
-from user.models import *
+from users.models import *
 from .weather import *
 from .models import WeixinUser
 from .baidumap import *
 from .utils import *
+from .handler import *
 
 reply_null = ''
 reply_address_null = '''
@@ -106,19 +107,10 @@ def weixin_shop_reply(latitude, longitude, number, msg):
     return t.render(Context(context))
 
 def weixin_event_handle(msg):
-    if msg['Event'] == 'subscribe':
-        new_openid = msg['FromUserName']
-        new_user = WeixinUser(openid = new_openid)
-        new_user.save()
-        return weixin_reply_msg(msg, reply0)
+    if msg['Event'] == 'subscribe':   ###有用户订阅微信，按照注册处理，注册来源是微信，用户名密码暂时是openid
+        return weixin_reply_msg(handle_subscribe(msg), reply0)
     if msg['Event'] == 'unsubscribe':
-        del_openid = msg['FromUserName']
-        del_user = WeixinUser.objects.get(openid = del_openid)
-        if del_user:
-            del_user.delete()
-            print('weixin user %s unsubscribe' % del_openid)
-            remove_circle(del_user.id, 2)
-        return weixin_reply_msg(msg, reply_null)
+        return weixin_reply_msg(handle_unsubscribe(msg), reply_null)
     if msg['Event'] == 'LOCATION':
         latitude = msg['Latitude']
         longitude = msg['Longitude']
