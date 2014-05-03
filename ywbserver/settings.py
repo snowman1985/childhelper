@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'users',
     #'merchant',
     #'registration',
     'weixin',
@@ -58,6 +59,7 @@ INSTALLED_APPS = (
     'consumption',
     'mobile',
     'weather',
+    #'user',
 )
 
 MIDDLEWARE_CLASSES = (

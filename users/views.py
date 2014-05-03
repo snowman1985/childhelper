@@ -13,6 +13,7 @@ from django.utils import http
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D # alias for Distance
 from django.views.decorators.csrf import csrf_exempt
+from .models import *
 from datetime import *
 from .utils import *
 import json, base64, traceback, random
@@ -55,12 +56,14 @@ def register(request):
     baby.homeaddr = baby_homeaddr
     
     #get latitude and longitude from baidumap.and save as a geo point.
+    need_circle = False
     if(baby_homeaddr):
         baiduresp = get_baidu_location(baby_homeaddr)
         if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
             lng = baiduresp['result']['location']['lng']
             lat = baiduresp['result']['location']['lat']
             baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
+            need_circle = True
         else:
             baby.homepoint = None
     else:
@@ -75,6 +78,8 @@ def register(request):
     baby.parent_id = user.id
     print(baby.parent_id)
     baby.save()
+    if need_circle:
+        create_circle(user.id, 1, baby.homepoint)
     
     response = 'False'
 
