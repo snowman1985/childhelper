@@ -34,7 +34,7 @@ def create_circle(user, source, curpoint, distance=5000):
         circle.circle_users.append(user.id)
         circle.save()
         newcircleinfo.append(circle.user.id)
-    newcircle = Circle(user=user, user_source=source, circle_info=newcircleinfo, point=curpoint, not_deleted = True)
+    newcircle = Circle(user=user, user_source=source, circle_users=newcircleinfo, point=curpoint, not_deleted = True, topic_ids = [])
     newcircle.save()
 
 def create_circle_from_position(user, source, longitude, latitude, distance=5000):

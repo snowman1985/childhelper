@@ -19,8 +19,8 @@ from django.utils import http
 import requests
 
 def test_post_topic():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'shentest'
+    password = 'shentest'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     content = '我说，爱丫丫'
@@ -31,7 +31,21 @@ def test_post_topic():
     fp = open("test.html",'w')
     fp.write(r.text)
     fp.close()
+
+def test_get_topic():
+    username = 'shentest'
+    password = 'shentest'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    url = 'http://localhost:8000/quan/getcircletopic/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password}
+    r = requests.post(url, data=payload, headers = headers)
+    fp = open("test_gettopic.html",'w')
+    fp.write(r.text)
+    fp.close()
     
 
-print(test_post_topic())
+#print(test_post_topic())
+print(test_get_topic())
 

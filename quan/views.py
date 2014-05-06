@@ -13,6 +13,8 @@ from django.utils import http
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D # alias for Distance
 from django.views.decorators.csrf import csrf_exempt
+from django.template.loader import get_template
+from django.template import Context
 from .models import *
 from datetime import *
 from .utils import *
@@ -41,11 +43,34 @@ def post_topic(request):
         return HttpResponse('True')
     else:
         return HttpResponse('POST_TOPIC_ERROR')
-        
 
+@csrf_exempt       
+def get_circletopic(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user:
+        return HttpResponse('AUTH_FAILED')
+    topicids = user.circle.topic_ids
+    print("##topicids:", topicids)
     
-    
-    
-    
-    
-    
+    circletopics = []
+    for topicid in reversed(topicids):
+        topic = Topic.objects.get(id = topicid)
+        circletopics.append(topic)
+
+    print("##circletopics:", circletopics)
+
+    context = {}
+    #context['topics'] = circletopics
+    t = get_template("quan/topics.html") 
+    print("##get template:", t)
+    #return t.render(Context(context))
+    return HttpResponse(t.render(Context(context)))
+
+@csrf_exempt
+def addtopiccomment(request, topicid):
+    (authed, username, password, user) = auth_user(request)
+    topic = Topic.objects.get(id=int(topicid))
+    comment = Comment(from_user = user.id, topic=topic, content=request.POST['comment'], create_time=datetime.datetime.now())
+    comment.save()
+    return get_circletopic(request)
+        
