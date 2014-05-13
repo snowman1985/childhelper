@@ -15,13 +15,18 @@ class Circle(models.Model):
     objects = models.GeoManager()
     user = models.OneToOneField(User)
     topic_ids = dbarray.IntegerArrayField()
-    not_deleted = models.BooleanField()
+    last_access = models.DateTimeField() # recorde the last-access datatime
+    not_deleted = models.BooleanField() # mark if this circle should be computed
     
     def add_topic(self, topic):
         self.topic_ids.append(topic.id)
         for notice_user_id in self.circle_users:
             notice_user = User.objects.get(id = notice_user_id)
+            if not notice_user.not_deleted:
+                continue
             notice_user.circle.topic_ids.append(topic.id)
+            notice_user.circle.save()
+        self.save()
             
     def get_topics(self):
         return None

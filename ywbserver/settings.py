@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    "django_cron",
     'users',
     #'merchant',
     #'registration',
@@ -87,6 +88,7 @@ DATABASES = {
         'PASSWORD': 'wjbb111',
         'HOST': 'localhost',
         'PORT': '5432',
+        'ATOMIC_REQUESTS':'True',
     },
 }
 
@@ -130,3 +132,11 @@ EMAIL_USE_TLS = True
 #DATABASE_ROUTERS = ['ywbweb.dbrouter.DBRouter',]
 
 DOMAIN = 'http://wjbb.cloudapp.net:80/'
+
+#for django-cron job. mark the circle as deleted if the user not access this circle for a long time.
+CRON_CLASSES = [
+    "quan.cron.DelCronJob",
+    #"django_cron.cron.FailedRunsNotificationCronJob",  need send_email to notify the admin cron job failed.
+    # ...
+]
+CIRCLE_IDLE_DAYS = 365

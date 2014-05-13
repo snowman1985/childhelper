@@ -19,11 +19,11 @@ from django.utils import http
 import requests
 
 def test_post_topic():
-    username = 'shentest'
-    password = 'shentest'
+    username = 'shentest1'
+    password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    content = '我说，爱丫丫'
+    content = 'test post a topic.'
     url = 'http://localhost:8000/quan/posttopic/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password, 'content': content}
@@ -33,8 +33,8 @@ def test_post_topic():
     fp.close()
 
 def test_get_topic():
-    username = 'shentest'
-    password = 'shentest'
+    username = 'shentest2'
+    password = 'shentest2'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     url = 'http://localhost:8000/quan/getcircletopic/'
@@ -45,7 +45,19 @@ def test_get_topic():
     fp.write(r.text)
     fp.close()
     
+def test_get_topic_webview():
+    username = 'shentest2'
+    password = 'shentest2'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    url = 'http://localhost:8000/quan/gettopicwebview/6'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password}
+    r = requests.get(url)
+    fp = open("test_gettopic.html",'w')
+    fp.write(r.text)
+    fp.close()
 
 #print(test_post_topic())
-print(test_get_topic())
-
+#print(test_get_topic())
+print(test_get_topic_webview())

@@ -6,7 +6,6 @@ Created on Nov 2, 2013
 '''
 
 from django.http import *
-from baby.models import Baby
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.utils import http
@@ -19,6 +18,8 @@ from .utils import *
 import json, base64, traceback, random
 import datetime,time
 from utils.baidumap import *
+from baby.models import Baby
+from quan.models import *
 
 @csrf_exempt   ###保证对此接口的访问不需要csrf
 def check_user_name(username):
@@ -77,7 +78,7 @@ def register(request):
     user.save()
     baby.save()
     if need_circle:
-        create_circle(user.id, 1, baby.homepoint)
+        create_circle(user, 1, baby.homepoint)
     response = 'False'
     if baby is None:
         response = 'False'
