@@ -19,16 +19,16 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'anonymous'
-    password = 'wjbb123'
+    username = 'shengeng'
+    password = 'shengeng'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    babyname = 'xueyuzhe'
+    babyname = 'shenruyi'
     babyheight = 1.4
     babyweight = 34
-    birthday = '2009-04-08'
+    birthday = '2012-04-08'
     babysex = 'girl'
-    homeaddr = '北京市海淀区西二旗中路6号'
+    homeaddr = '北京市海淀区紫金庄园'
     schooladdr = '北京市万泉河路小学'
     url = 'http://localhost:8000/user/register/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}

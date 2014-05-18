@@ -15,7 +15,7 @@ class Circle(models.Model):
     objects = models.GeoManager()
     user = models.OneToOneField(User)
     topic_ids = dbarray.IntegerArrayField()
-    last_access = models.DateTimeField() # recorde the last-access datatime
+    last_access = models.DateTimeField(auto_now_add=True) # recorde the last-access datatime
     not_deleted = models.BooleanField() # mark if this circle should be computed
     
     def add_topic(self, topic):

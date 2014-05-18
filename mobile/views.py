@@ -75,16 +75,72 @@ def mobile_view(request):
         consumptions = getconsumptionlist_anonymous(request, cnumber)
         return HttpResponse(data_encode(knowls, shops, consumptions))
     else:
-        baby = Baby.objects.get(parent_id=user.id)
+        baby = Baby.objects.get(user=user)
         if not baby:
             return HttpResponse('BABY_DATA_NULL')
         knowls = getknowllist(baby, knumber)
         shops = getshoplist(baby, snumber)
         consumptions = getconsumptionlist(baby, cnumber)
-        return HttpResponse(data_encode(knowls, consumptions, consumptions))
-    
-def data_encode(knowls, shops, consumptions):
-    rets = knowls+shops+consumptions
+        return HttpResponse(data_encode(knowls, getshoplist, consumptions))
+
+@csrf_exempt
+def mobile_view_knowledges(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user:
+        return HttpResponse('AUTH_FAILED')
+    knumber = int(request.POST.get('knumber'))
+    if knumber == None:
+        return HttpResponse('PARAMETER_NULL_number')
+    if user.username == 'anonymous':
+        knowls = getknowllist_anonymous(request, knumber)
+        return HttpResponse(knowls)
+    else:
+        baby = Baby.objects.get(user=user)
+        if not baby:
+            return HttpResponse('BABY_DATA_NULL')
+        knowls = getknowllist(baby, knumber)
+        return HttpResponse(knowls)
+
+@csrf_exempt
+def mobile_view_shops(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user:
+        return HttpResponse('AUTH_FAILED')
+    snumber = int(request.POST.get('snumber'))
+    if snumber == None:
+        return HttpResponse('PARAMETER_NULL_number')
+    if user.username == 'anonymous':
+        shops = getshoplist_anonymous(request, snumber)
+        return HttpResponse(shops)
+    else:
+        baby = Baby.objects.get(user=user)
+        if not baby:
+            return HttpResponse('BABY_DATA_NULL')
+        shops = getshoplist(baby, snumber)
+        return HttpResponse(shops)    
+
+@csrf_exempt
+def mobile_view_consumptions(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user:
+        return HttpResponse('AUTH_FAILED')
+    cnumber = int(request.POST.get('cnumber'))
+    if  cnumber == None:
+        return HttpResponse('PARAMETER_NULL_number')
+    if user.username == 'anonymous':
+        consumptions = getconsumptionlist_anonymous(request, cnumber)
+        return HttpResponse(data_encode(consumptions))
+    else:
+        baby = Baby.objects.get(user=user)
+        if not baby:
+            return HttpResponse('BABY_DATA_NULL')
+        consumptions = getconsumptionlist(baby, cnumber)
+        return HttpResponse(consumptions)
+
+def data_encode(*data_array):
+    rets = ''
+    for (data) in data_array:
+      rets = ('%s%s') % (rets, data)
     return json.dumps(rets, ensure_ascii=False)
     
 def knowledge_list_encode(knowls):

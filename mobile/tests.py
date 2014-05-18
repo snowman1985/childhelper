@@ -19,11 +19,11 @@ from django.utils import http
 import requests
 
 def testgetdata():
-    username = 'shentest'
-    password = 'shentest'
+    username = 'shengeng'
+    password = 'shengeng'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    url = 'http://localhost:80/mobile/getdata/'
+    url = 'http://localhost:8000/mobile/getdata/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password, 'knumber': 5,
                'snumber':2, 'cnumber':2}
@@ -48,5 +48,52 @@ def testgetdata_anonymous():
     fp.close()
     return r.text
 
+def testgetknowledges():
+    username = 'shengeng'
+    password = 'shengeng'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    url = 'http://localhost:8000/mobile/getknowledges/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password, 'knumber': 5,
+               'snumber':2, 'cnumber':2}
+    r = requests.post(url, data=payload, headers = headers)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+    return r.text
+
+def testgetshops():
+    username = 'shengeng'
+    password = 'shengeng'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    url = 'http://localhost:8000/mobile/getshops/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password, 'knumber': 5,
+               'snumber':2, 'cnumber':2}
+    r = requests.post(url, data=payload, headers = headers)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+    return r.text
+
+def testgetconsumptions():
+    username = 'shengeng'
+    password = 'shengeng'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    url = 'http://localhost:8000/mobile/getconsumptions/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password, 'knumber': 5,
+               'snumber':2, 'cnumber':2}
+    r = requests.post(url, data=payload, headers = headers)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+    return r.text
+
 #print(testgetdata())
-print(testgetdata_anonymous())
+#print(testgetknowledges())
+#print(testgetshops())
+#print(testgetconsumptions())
