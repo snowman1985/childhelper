@@ -34,28 +34,33 @@
     <div class="container">
       <div class="row row-offcanvas-right">
         <div class="col-md-8">
+        
+           <label>快说点什么吧～</label>
+              <form action="{% url 'quan.views.post_topic_webview' current_uid %}" method="post">
+                    <textarea name="topic_content" cols="60" rows="5"></textarea>
+                    <input type="submit" value="发布" />
+                    <br>
+			  </form>
+        
                    <div class="list-group">
                    {%for topic in topics%}
-                  <a href="#" class="list-group-item">
-                    <h4 class="list-group-item-heading">{{topic.from_user.username}}</h4>
-                    <h5 class="list-group-item-heading">{{topic.create_time}}</h4>
-                    <p class="list-group-item-text">{{topic.content}}</p>
-                  </a>
-                  
-                  <label>评论</label>
-                    <ul>
+                  <div href="#" class="list-group-item">
+                    <h4 class="list-group-item-text">{{topic.content}}</h4>
+                    <h6 class="list-group-item-heading">{{topic.from_user.username}}</h6>
+                    <h6 class="list-group-item-heading">{{topic.create_time}}</h6>
+                    <label>评论</label>
+                      <ul>
                       {% for comment in topic.comment_set.all %}
-                        <li>{{comment.content}}</li>
-                        <li>{{comment.create_time}}</li>
+                        <li>{{comment.from_user.username}} : {{comment.content}}  时间：{{comment.create_time}}</li>
                       {% endfor %}
 					  </ul>
-                  
                   <label>写评论</label>
                   <form action="{% url 'quan.views.addcommentwebview' current_uid topic.id %}" method="post">
                     <textarea name="comment" cols="40" rows="1"></textarea>
                     <input type="submit" value="发布" />
                     <br>
 					</form>
+                  </div>
                   {%endfor%}
                    </div>
         </div>

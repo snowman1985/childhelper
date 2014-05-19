@@ -64,7 +64,7 @@ class Topic(models.Model):
 
 
 class Comment(models.Model):
-    from_user = models.IntegerField()
+    from_user = models.ForeignKey(User)
     content = models.TextField()
     topic = models.ForeignKey(Topic)
     create_time = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc))

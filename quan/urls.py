@@ -9,6 +9,7 @@ from .views import *
 
 urlpatterns = patterns('',
     url(r'^posttopic/', post_topic, name='post_topic'),
+    url(r'^posttopicwebview/(\d+)/$', post_topic_webview, name='post_topic_webview'),
     url(r'^getcircletopic/', get_circletopic, name='get_circle_topic'),
     url(r'^gettopicwebview/([0-9]*)/$', get_topic_webview, name='get_topic_webview'),
     url(r'^addtopiccomment/(\d+)/$', addtopiccomment, name='addtopiccomment'),

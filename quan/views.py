@@ -47,6 +47,31 @@ def post_topic(request):
     else:
         return HttpResponse('POST_TOPIC_ERROR')
 
+@csrf_exempt   ###保证对此接口的访问不需要csrf
+def post_topic_webview(request, current_uid):
+    userid = int(current_uid)
+    user = User.objects.get(id=userid)
+    if not user:
+        return HttpResponse('INVALID_USER')
+    content = request.POST.get('topic_content')
+    if not content:
+        return HttpResponseRedirect('/quan/gettopicwebview/%s/' % current_uid)
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+    topic = Topic(from_user = user,
+                 content =  content,
+                 create_time = timenow,
+                 update_time = timenow)
+    ret = topic.save()
+    topic_id = topic.id
+    circle = user.circle
+    circle.last_access = timenow # update the last-access time.
+    circle.save()
+    if topic_id and circle:
+        circle.add_topic(topic)
+        return HttpResponseRedirect('/quan/gettopicwebview/%s/' % current_uid)
+    else:
+        return HttpResponse('POST_TOPIC_ERROR')
+
 def circletopic_encode(topics):
     rets = []
     number = len(list(topics))
@@ -84,7 +109,7 @@ def get_topic_webview(request, uid):
     userid = int(uid)
     user = User.objects.get(id=userid)
     if not user:
-        return HttpResponse('INVALID_UID')
+        return HttpResponse('INVALID_USER')
     timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     circle = user.circle
     circle.last_access = timenow # update the last-access time.
@@ -116,11 +141,13 @@ def addtopiccomment(request, topicid):
 
 @csrf_exempt
 def addcommentwebview(request, current_uid, topicid):
-    print(current_uid)
-    print(topicid)
+    userid = int(current_uid)
+    user = User.objects.get(id=userid)
+    if not user:
+        return HttpResponse('INVALID_USER')
     topic = Topic.objects.get(id=int(topicid))
     timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
-    comment = Comment(from_user = current_uid, topic=topic, content=request.POST['comment'], create_time=timenow)
+    comment = Comment(from_user = user, topic=topic, content=request.POST['comment'], create_time=timenow)
     comment.save()
     return HttpResponseRedirect('/quan/gettopicwebview/%s/' % current_uid)
 
