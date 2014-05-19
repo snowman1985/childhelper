@@ -15,6 +15,7 @@ from django.contrib.gis.measure import D # alias for Distance
 from django.views.decorators.csrf import csrf_exempt
 from django.template.loader import get_template
 from django.template import Context
+from django.utils.timezone import utc
 from .models import *
 from datetime import *
 from .utils import *
@@ -30,7 +31,7 @@ def post_topic(request):
     content = request.POST.get('content')
     if not content:
         return HttpResponse('CONTENT_NULL')
-    timenow = datetime.datetime.now()
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     topic = Topic(from_user = user,
                  content =  content,
                  create_time = timenow,
@@ -46,13 +47,29 @@ def post_topic(request):
     else:
         return HttpResponse('POST_TOPIC_ERROR')
 
+def circletopic_encode(topics):
+    rets = []
+    number = len(list(topics))
+    for i in range(0, number):
+        topic = topics[i]
+        t = {}
+        t['from_user'] = topic.from_user
+        t['content'] = topic.content
+        t['create_time'] = topic.create_time
+        t['update_time'] = topic.update_time
+        c = []
+        t['comments'] = c
+        rets.append(t)
+    return rets
+
 @csrf_exempt       
 def get_circletopic(request):
     (authed, username, password, user) = auth_user(request)
     if not authed or not user:
         return HttpResponse('AUTH_FAILED')
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     circle = user.circle
-    circle.last_access = datetime.datetime.now() # update the last-access time.
+    circle.last_access = timenow # update the last-access time.
     circle.save()
     topicids = circle.topic_ids
     print("##topicids:", topicids)
@@ -61,19 +78,16 @@ def get_circletopic(request):
         topic = Topic.objects.get(id = topicid)
         circletopics.append(topic)
     print("##circletopics:", circletopics)
-    context = {}
-    context['topics'] = circletopics
-    t = get_template("quan/topics.html") 
-    print("##get template:", t)
-    return HttpResponse(t.render(Context(context)))
+    return HttpResponse(circletopic_encode(circletopics))
 
 def get_topic_webview(request, uid):
     userid = int(uid)
     user = User.objects.get(id=userid)
     if not user:
         return HttpResponse('INVALID_UID')
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     circle = user.circle
-    circle.last_access = datetime.datetime.now() # update the last-access time.
+    circle.last_access = timenow # update the last-access time.
     circle.save()
     topicids = circle.topic_ids
     circletopics = []
@@ -82,6 +96,7 @@ def get_topic_webview(request, uid):
         circletopics.append(topic)
     context = {}
     context['topics'] = circletopics
+    context['current_uid'] = uid
     t = get_template("quan/topics_webview.html") 
     #return t.render(Context(context))
     return HttpResponse(t.render(Context(context)))
@@ -89,20 +104,24 @@ def get_topic_webview(request, uid):
 @csrf_exempt
 def addtopiccomment(request, topicid):
     (authed, username, password, user) = auth_user(request)
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     circle = user.circle
-    circle.last_access = datetime.datetime.now() # update the last-access time.
+    circle.last_access = timenow # update the last-access time.
     circle.save()
     topic = Topic.objects.get(id=int(topicid))
-    comment = Comment(from_user = user.id, topic=topic, content=request.POST['comment'], create_time=datetime.datetime.now())
+    comment = Comment(from_user = user.id, topic=topic, content=request.POST['comment'], create_time=timenow)
     comment.save()
     return get_circletopic(request)
         
 
 @csrf_exempt
-def addcommentwebview(request, topicid):
+def addcommentwebview(request, current_uid, topicid):
+    print(current_uid)
+    print(topicid)
     topic = Topic.objects.get(id=int(topicid))
-    comment = Comment(from_user = 10, topic=topic, content=request.POST['comment'], create_time=datetime.datetime.now())
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+    comment = Comment(from_user = current_uid, topic=topic, content=request.POST['comment'], create_time=timenow)
     comment.save()
-    return get_topic_webview(request, topic.from_user.id)
+    return HttpResponseRedirect('/quan/gettopicwebview/%s/' % current_uid)
 
 

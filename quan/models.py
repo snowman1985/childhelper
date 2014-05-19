@@ -4,7 +4,8 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D
 import dbarray
-
+import datetime
+from django.utils.timezone import utc
 # Create your models here.
 
 class Circle(models.Model):
@@ -15,14 +16,14 @@ class Circle(models.Model):
     objects = models.GeoManager()
     user = models.OneToOneField(User)
     topic_ids = dbarray.IntegerArrayField()
-    last_access = models.DateTimeField(auto_now_add=True) # recorde the last-access datatime
+    last_access = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc)) # recorde the last-access datatime
     not_deleted = models.BooleanField() # mark if this circle should be computed
     
     def add_topic(self, topic):
         self.topic_ids.append(topic.id)
         for notice_user_id in self.circle_users:
             notice_user = User.objects.get(id = notice_user_id)
-            if not notice_user.not_deleted:
+            if not notice_user.circle.not_deleted:
                 continue
             notice_user.circle.topic_ids.append(topic.id)
             notice_user.circle.save()
@@ -58,15 +59,15 @@ class Topic(models.Model):
     from_user = models.ForeignKey(User)
     content = models.TextField()
     comments = dbarray.IntegerArrayField(null=True)
-    create_time = models.DateTimeField()
-    update_time = models.DateTimeField()
+    create_time = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc))
+    update_time = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc))
 
 
 class Comment(models.Model):
     from_user = models.IntegerField()
     content = models.TextField()
     topic = models.ForeignKey(Topic)
-    create_time = models.DateTimeField()
+    create_time = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc))
     
     
     

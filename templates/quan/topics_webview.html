@@ -51,7 +51,7 @@
 					  </ul>
                   
                   <label>写评论</label>
-                  <form action="{% url 'quan.views.addcommentwebview' topic.id %}" method="post">
+                  <form action="{% url 'quan.views.addcommentwebview' current_uid topic.id %}" method="post">
                     <textarea name="comment" cols="40" rows="1"></textarea>
                     <input type="submit" value="发布" />
                     <br>

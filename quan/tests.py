@@ -23,7 +23,7 @@ def test_post_topic():
     password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    content = 'test post a topic.'
+    content = '呵呵，测试一下在圈子里发帖2。'
     url = 'http://localhost:8000/quan/posttopic/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password, 'content': content}
@@ -50,7 +50,7 @@ def test_get_topic_webview():
     password = 'shentest2'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    url = 'http://localhost:8000/quan/gettopicwebview/6'
+    url = 'http://localhost:8000/quan/gettopicwebview/14/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.get(url)

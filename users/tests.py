@@ -19,8 +19,8 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'shengeng'
-    password = 'shengeng'
+    username = 'shentest1'
+    password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'shenruyi'
