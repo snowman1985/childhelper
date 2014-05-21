@@ -93,13 +93,13 @@ def mobile_view_knowledges(request):
         return HttpResponse('PARAMETER_NULL_number')
     if user.username == 'anonymous':
         knowls = getknowllist_anonymous(request, knumber)
-        return HttpResponse(knowls)
+        return HttpResponse(data_encode(knowls))
     else:
         baby = Baby.objects.get(user=user)
         if not baby:
             return HttpResponse('BABY_DATA_NULL')
         knowls = getknowllist(baby, knumber)
-        return HttpResponse(knowls)
+        return HttpResponse(data_encode(knowls))
 
 @csrf_exempt
 def mobile_view_shops(request):
@@ -111,13 +111,13 @@ def mobile_view_shops(request):
         return HttpResponse('PARAMETER_NULL_number')
     if user.username == 'anonymous':
         shops = getshoplist_anonymous(request, snumber)
-        return HttpResponse(shops)
+        return HttpResponse(data_encode(shops))
     else:
         baby = Baby.objects.get(user=user)
         if not baby:
             return HttpResponse('BABY_DATA_NULL')
         shops = getshoplist(baby, snumber)
-        return HttpResponse(shops)    
+        return HttpResponse(data_encode(shops))    
 
 @csrf_exempt
 def mobile_view_consumptions(request):
@@ -135,10 +135,10 @@ def mobile_view_consumptions(request):
         if not baby:
             return HttpResponse('BABY_DATA_NULL')
         consumptions = getconsumptionlist(baby, cnumber)
-        return HttpResponse(consumptions)
+        return HttpResponse(data_encode(consumptions))
 
 def data_encode(*data_array):
-    rets = ''
+    rets =''
     for (data) in data_array:
       rets = ('%s%s') % (rets, data)
     return json.dumps(rets, ensure_ascii=False)
