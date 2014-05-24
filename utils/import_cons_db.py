@@ -1,5 +1,5 @@
 import os,sys
-sys.path.insert(0, os.path.join("/home/shengeng","workspace","ywbserver"))
+sys.path.insert(0, os.path.join("/root","workspace","ywbserver"))
 from django.core.management import *
 from ywbserver import settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ywbserver.settings")

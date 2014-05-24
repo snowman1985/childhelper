@@ -35,7 +35,7 @@
 <br></br>
 <label>写评论</label>
 
-<form action="{% url 'consumption.views.addconsumptioncomment' consumption_consumptionid %}" method="post">
+<form action="http://wjbb.cloudapp.net/consumption/addconsumptioncomment/{{consumption_consumptionid}}/" method="post">
 <textarea name="consumptioncomment" cols="40" rows="3"></textarea>
 <input type="submit" value="发布" />
 <br></br>

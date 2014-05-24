@@ -35,7 +35,7 @@
 <br></br>
 <label>写评论</label>
 
-<form action="{% url 'shop.views.addshopcomment' shop_shopid %}" method="post">
+<form action="http://wjbb.cloudapp.net/shop/addshopcomment/{{shop_shopid}}/" method="post">
 <textarea name="shopcomment" cols="40" rows="3"></textarea>
 <input type="submit" value="发布" />
 <br></br>

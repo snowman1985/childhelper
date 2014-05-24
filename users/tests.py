@@ -19,8 +19,8 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'test01'
+    password = 'test01'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'shenruyi'
@@ -30,7 +30,7 @@ def testregister():
     babysex = 'girl'
     homeaddr = '北京市海淀区紫金庄园'
     schooladdr = '北京市万泉河路小学'
-    url = 'http://localhost:8000/user/register/'
+    url = 'http://localhost:80/user/register/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password, 'babyname': babyname,
                'babyheight':babyheight, 'babyweight':babyweight, 'birthday':birthday,
