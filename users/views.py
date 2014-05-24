@@ -139,6 +139,12 @@ def update(request):
         response = 'True'
     return HttpResponse(response)
 
+def data_encode(*data_array):
+    rets =''
+    for (data) in data_array:
+      rets = ('%s%s') % (rets, data)
+    return json.dumps(rets, ensure_ascii=False)
+
 @csrf_exempt
 def informationcheck(request):
     try:
@@ -147,6 +153,21 @@ def informationcheck(request):
             return HttpResponse('False')
         else:
             return HttpResponse('True')
+    except Exception as e:
+        print(e)
+        return HttpResponse(e)
+
+@csrf_exempt
+def getinfo(request):
+    try:
+        (authed, username, password, user) = auth_user(request)
+        if not user:
+            return HttpResponse('AUTH_FAILED')
+        else:
+            resp = {}
+            resp['username'] = user.username
+            resp['userid'] = user.id
+            return HttpResponse(data_encode(resp))
     except Exception as e:
         print(e)
         return HttpResponse(e)
