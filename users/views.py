@@ -78,6 +78,7 @@ def register(request):
     user.save()
     baby.save()
     if need_circle:
+        print("##create circle")
         create_circle(user, 1, baby.homepoint)
     response = 'False'
     if baby is None:
@@ -167,7 +168,8 @@ def getinfo(request):
             resp = {}
             resp['username'] = user.username
             resp['userid'] = user.id
-            return HttpResponse(data_encode(resp))
+            #return HttpResponse(data_encode(resp))
+            return HttpResponse(json.dumps(resp, ensure_ascii=False))
     except Exception as e:
         print(e)
         return HttpResponse(e)
