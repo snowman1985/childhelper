@@ -97,10 +97,12 @@ def get_circletopic(request):
     circle.last_access = timenow # update the last-access time.
     circle.save()
     topicids = circle.topic_ids
+    #print("##topicids:", topicids)
     circletopics = []
     for topicid in reversed(topicids):
         topic = Topic.objects.get(id = topicid)
         circletopics.append(topic)
+    #print("##circletopics:", circletopics)
     return HttpResponse(circletopic_encode(circletopics))
 
 def get_topic_webview(request, uid):
