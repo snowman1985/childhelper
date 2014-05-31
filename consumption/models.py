@@ -7,11 +7,11 @@ import random, datetime
 # Create your models here.
 
 class Consumption(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=5000)
     city = models.CharField(max_length=20)
-    address = models.CharField(max_length=100)
-    abstract = models.CharField(max_length=1000)
-    description = models.CharField(max_length=5000)
+    address = models.CharField(max_length=5000)
+    abstract = models.CharField(max_length=5000)
+    description = models.CharField(max_length=50000)
     url = models.CharField(max_length=1000)
     begin = models.DateTimeField()
     end = models.DateTimeField()
@@ -29,7 +29,7 @@ class ConsumptionComment(models.Model):
     comment = models.CharField(max_length=500)
 
 
-def get_consumption_nearby(latitude, longitude, number=1, distance = 500000):
+def get_consumption_nearby(latitude, longitude, number=1, distance = 5000):
     point = fromstr("POINT(%s %s)" % (longitude, latitude))
     timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     nearby = Consumption.objects.filter(point__distance_lt=(point, D(km=int(distance)/1000)), end__gt=timenow)

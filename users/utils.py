@@ -32,6 +32,8 @@ def auth_user(request):
         print('password from POST is ' + password)
     user = auth.authenticate(username = username, password = password)
     if user is None:
+        print("##user is none")
         return(False, username, password, user)
     else:
+        print("##user authed")
         return(True, username, password, user)

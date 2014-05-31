@@ -97,21 +97,24 @@ def get_circletopic(request):
     circle.last_access = timenow # update the last-access time.
     circle.save()
     topicids = circle.topic_ids
-    print("##topicids:", topicids)
     circletopics = []
     for topicid in reversed(topicids):
         topic = Topic.objects.get(id = topicid)
         circletopics.append(topic)
-    print("##circletopics:", circletopics)
     return HttpResponse(circletopic_encode(circletopics))
 
 def get_topic_webview(request, uid):
     userid = int(uid)
     user = User.objects.get(id=userid)
     if not user:
+        print("##invalid user")
         return HttpResponse('INVALID_USER')
     timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
-    circle = user.circle
+    try:
+      circle = user.circle
+    except Exception as e:
+      print("##get user circle exception:", e)
+      return HttpResponse("请填写您所在位置，我们会为您创建圈子")
     circle.last_access = timenow # update the last-access time.
     circle.save()
     topicids = circle.topic_ids

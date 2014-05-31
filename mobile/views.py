@@ -92,14 +92,17 @@ def mobile_view_knowledges(request):
     if knumber == None:
         return HttpResponse('PARAMETER_NULL_number')
     if user.username == 'anonymous':
+        print("##anonymous user")
         knowls = getknowllist_anonymous(request, knumber)
-        return HttpResponse(data_encode(knowls))
+        return HttpResponse(json.dumps(knowls, ensure_ascii=False))
+        #return HttpResponse(data_encode(knowls))
     else:
         baby = Baby.objects.get(user=user)
         if not baby:
             return HttpResponse('BABY_DATA_NULL')
         knowls = getknowllist(baby, knumber)
-        return HttpResponse(data_encode(knowls))
+        return HttpResponse(json.dumps(knowls, ensure_ascii=False)) 
+        #return HttpResponse(data_encode(knowls))
 
 @csrf_exempt
 def mobile_view_shops(request):
@@ -111,13 +114,15 @@ def mobile_view_shops(request):
         return HttpResponse('PARAMETER_NULL_number')
     if user.username == 'anonymous':
         shops = getshoplist_anonymous(request, snumber)
-        return HttpResponse(data_encode(shops))
+        return HttpResponse(json.dumps(shops, ensure_ascii=False))
+        #return HttpResponse(data_encode(shops))
     else:
         baby = Baby.objects.get(user=user)
         if not baby:
             return HttpResponse('BABY_DATA_NULL')
         shops = getshoplist(baby, snumber)
-        return HttpResponse(data_encode(shops))    
+        return HttpResponse(json.dumps(shops, ensure_ascii=False))
+        #return HttpResponse(data_encode(shops))    
 
 @csrf_exempt
 def mobile_view_consumptions(request):
@@ -129,13 +134,15 @@ def mobile_view_consumptions(request):
         return HttpResponse('PARAMETER_NULL_number')
     if user.username == 'anonymous':
         consumptions = getconsumptionlist_anonymous(request, cnumber)
-        return HttpResponse(data_encode(consumptions))
+        return HttpResponse(json.dumps(consumptions, ensure_ascii=False))
+        #return HttpResponse(data_encode(consumptions))
     else:
         baby = Baby.objects.get(user=user)
         if not baby:
             return HttpResponse('BABY_DATA_NULL')
         consumptions = getconsumptionlist(baby, cnumber)
-        return HttpResponse(data_encode(consumptions))
+        return HttpResponse(json.dumps(consumptions, ensure_ascii=False))
+        #return HttpResponse(data_encode(consumptions))
 
 def data_encode(*data_array):
     rets =''

@@ -16,7 +16,7 @@ from .models import *
 from datetime import *
 from .utils import *
 import json, base64, traceback, random
-import datetime,time
+import datetime, time
 from utils.baidumap import *
 from baby.models import Baby
 from quan.models import *
@@ -52,7 +52,11 @@ def register(request):
     baby.name = baby_name
     baby.height = baby_height
     baby.weight = baby_weight
-    baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
+    try:
+      baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
+    except Exception as e:
+      print(e)
+      return HttpResponse('BIRTHDAY_FORMAT_ERR')
     baby.sex = baby_sex
     baby.homeaddr = baby_homeaddr
     baby.type = 1   ###这个注册用户来自app
@@ -78,6 +82,7 @@ def register(request):
     user.save()
     baby.save()
     if need_circle:
+        print("##create circle")
         create_circle(user, 1, baby.homepoint)
     response = 'False'
     if baby is None:
@@ -102,14 +107,18 @@ def update(request):
     baby = User.objects.get(id=user.id).baby
     print(baby)
     if not baby:
-        response = 'Can not found your baby in db.'
+        response = 'BABY_INFO_NULL'
         return HttpResponse(response)
     if baby_weight:
         baby.weight = float(baby_weight)
     if baby_height:
         baby.height = float(baby_height)
-    if baby_birthday:
+    try:
+      if baby_birthday:
         baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
+    except Exception as e:
+      print(e)
+      return HttpResponse('BIRTHDAY_FORMAT_ERR')
     print('user update, update baby info %s, birthday: %s' % (baby.name, baby_birthday))
     if baby_sex:
         baby.sex = baby_sex
@@ -150,8 +159,10 @@ def informationcheck(request):
     try:
         (authed, username, password, user) = auth_user(request)
         if not user:
+            print("##user not pass")
             return HttpResponse('False')
         else:
+            print("##user check pass")
             return HttpResponse('True')
     except Exception as e:
         print(e)
@@ -167,7 +178,8 @@ def getinfo(request):
             resp = {}
             resp['username'] = user.username
             resp['userid'] = user.id
-            return HttpResponse(data_encode(resp))
+            #return HttpResponse(data_encode(resp))
+            return HttpResponse(json.dumps(resp, ensure_ascii=False))
     except Exception as e:
         print(e)
         return HttpResponse(e)

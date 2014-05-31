@@ -8,7 +8,7 @@ from utils.baidumap import *
 from django.contrib.gis.geos import fromstr
 from django.utils.timezone import utc
 import psycopg2
-import datetime
+import datetime, time
 
 dbaddr = settings.DATABASES['default']['HOST']
 dbport = settings.DATABASES['default']['PORT']
@@ -38,13 +38,13 @@ for row in cur:
     lat = addrjson['result']['location']['lat']
     lng = addrjson['result']['location']['lng']
     city = row[1]
-    print("city:",city)
     point = fromstr("POINT(%s %s)" % (lng, lat))
     begin = datetime.datetime.utcfromtimestamp(int(row[7])).replace(tzinfo=utc)
     end = datetime.datetime.utcfromtimestamp(int(row[8])).replace(tzinfo=utc)
     cons = Consumption(name=name,city=city,address=address,abstract=abstract,description=description,
                        url=url, begin=begin, end = end, point=point)
     cons.save()
+    time.sleep(0.5)
   except Exception as e:
     print(e)
     pass
