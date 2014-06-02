@@ -19,8 +19,8 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'shentest03'
-    password = 'shentest03'
+    username = 'shentest04'
+    password = 'shentest04'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'shenruyi'
@@ -41,16 +41,16 @@ def testregister():
     fp.close()
     
 def testupdate():
-    username = 'shentest03'
-    password = 'shentest03'
+    username = 'shentest04'
+    password = 'shentest04'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'shenruyi2'
     babyheight = 1.4
     babyweight = 34
-    birthday = '2012-08dd8'
+    birthday = '2012-08-08'
     babysex = 'girl'
-    homeaddr = '北京市海淀区紫金庄园'
+    homeaddr = '北京市苏州街地铁站'
     schooladdr = '北京市万泉河路小学'
     url = 'http://localhost:8000/user/update/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
@@ -98,8 +98,8 @@ def testgetinfo():
     return r.text
     
 #print(testgetinfo())
-#print(testupdate())
-#print(testregister())
 print(testupdate())
+#print(testregister())
+#print(testupdate())
 
 #print(testregister())

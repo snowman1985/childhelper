@@ -38,8 +38,8 @@ def convert_baidu_location(latitude, longitude):
     return response['result'][0]['y'], response['result'][0]['x']
 
 #print(sys.getdefaultencoding())
-print(get_baidu_location('百度大厦')['result']['location']['lng'])
+print(get_baidu_location('xxx')['result'])
 
-#print(get_baidu_address('39.971353229973','116.30799772131'))
+#print(get_baidu_city('39.971353229973','116.30799772131'))
 #
 

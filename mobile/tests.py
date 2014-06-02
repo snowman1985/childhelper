@@ -79,8 +79,8 @@ def testgetshops():
     return r.text
 
 def testgetconsumptions():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'shentest04'
+    password = 'shentest04'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     url = 'http://localhost:8000/mobile/getconsumptions/'

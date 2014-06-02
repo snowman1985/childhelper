@@ -39,6 +39,17 @@ def get_consumption_nearby(latitude, longitude, number=1, distance = 5000):
         return list(Consumption.objects.all()[:number])
     else:
         return random.sample(list(nearby), number)
+    
+def get_consumption_city(city, number=1, distance = 5000):
+    citystr = city.replace('市', '')
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+    samecity = Consumption.objects.filter(city__exact=citystr)
+    count = samecity.count()
+    if number >= count:
+        print('consumption in city %s is not enough' % (citystr))
+        return list(Consumption.objects.all()[:number])
+    else:
+        return random.sample(list(samecity), number)
 
 def get_consumption_random(number=1):
     all = Consumption.objects.all()

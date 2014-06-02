@@ -63,17 +63,23 @@ def register(request):
     
     #get latitude and longitude from baidumap.and save as a geo point.
     need_circle = False
-    if(baby_homeaddr):
+    try:
+      if(baby_homeaddr):
         baiduresp = get_baidu_location(baby_homeaddr)
         if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
             lng = baiduresp['result']['location']['lng']
             lat = baiduresp['result']['location']['lat']
             baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
             need_circle = True
+            baby.city = get_baidu_city(lat, lng)
         else:
             baby.homepoint = None
-    else:
+            baby.city = None
+      else:
         baby.homepoint = None
+    except Exception as e:
+      print(e)
+      return HttpResponse('HOMEADDR_FORMAT_ERR')
     baby.schooladdr = baby_schooladdr
     print('user register, add a new baby %s, birthday: %s' % (baby.name, baby.birthday.strftime("%Y-%m-%d")))
 # 产生一个新用户:
@@ -124,18 +130,25 @@ def update(request):
         baby.sex = baby_sex
     if baby_name:
         baby.name = baby_name
-    if baby_homeaddr:
-        baby.homeaddr = baby_homeaddr
-        #get latitude and longitude from baidumap.and save as a geo point.
+    try:
+      if(baby_homeaddr):
         baiduresp = get_baidu_location(baby_homeaddr)
         if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
             lng = baiduresp['result']['location']['lng']
             lat = baiduresp['result']['location']['lat']
             baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
+            need_circle = True
+            baby.city = get_baidu_city(lat, lng)
+            baby.homeaddr = baby_homeaddr
         else:
             baby.homepoint = None
-    else:
+            baby.city = None
+      else:
         baby.homepoint = None
+    except Exception as e:
+      print(e)
+      return HttpResponse('HOMEADDR_FORMAT_ERR')
+
     if baby_schooladdr:
         baby.schooladdr = baby_schooladdr
     print('user update info: ')

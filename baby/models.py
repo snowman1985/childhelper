@@ -13,6 +13,7 @@ class Baby(models.Model):
     sex = models.TextField(max_length=10,null=True)
     weight = models.FloatField(2,null=True)
     height = models.FloatField(2,null=True)
+    city = models.TextField(max_length=40,null=True)
     homeaddr = models.TextField(max_length=100,null=True)
     schooladdr = models.TextField(max_length=100,null=True)
     homepoint = models.PointField(null=True)

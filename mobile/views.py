@@ -35,10 +35,8 @@ def getshoplist(baby, number):
 
 def getconsumptionlist(baby, number):
     respones = None
-    if(baby.homepoint):
-        latitude = baby.homepoint.y
-        longitude = baby.homepoint.x
-        response = consumption_list_encode(get_consumption_nearby(latitude, longitude, number))
+    if(baby.city):
+        response = consumption_list_encode(get_consumption_city(baby.city, number))
     else:
         response = consumption_list_encode(get_consumption_random(number))
     return response
