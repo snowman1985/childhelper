@@ -50,7 +50,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     "django_cron",
     'users',
-    'south',
+    #'south',
     #'merchant',
     #'registration',
     'weixin',
