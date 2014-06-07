@@ -63,6 +63,8 @@ INSTALLED_APPS = (
     'mobile',
     'weather',
     'quan',
+    'imagekit',
+    'photos',
 )
 
 MIDDLEWARE_CLASSES = (

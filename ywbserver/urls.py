@@ -21,4 +21,7 @@ urlpatterns = patterns('',
     url(r'^weather/', include('weather.urls')),
     url(r'^weixin/', include('weixin.urls')),
     url(r'^quan/', include('quan.urls')),
+    url(r'^photos/', include('photos.urls')),
+    (r'^media/(?P<path>.*)$', 'django.views.static.serve', { 'document_root': settings.MEDIA_ROOT})
+    
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
