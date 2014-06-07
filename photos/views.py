@@ -22,7 +22,7 @@ def upload_head(request):
     print(request.FILES)
     head_data = request.FILES['head']
     photo = Photo()
-    photo.name = request.POST['babyname']
+    photo.name = request.POST['username']
     photo.head_orig = head_data
     photo.save()
     full_url = ''.join(['http://', request.META['HTTP_HOST'], photo.head_thumbnail.url])

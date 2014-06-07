@@ -19,10 +19,12 @@ def testuploadhead():
     files = {'head' : head}
     url = 'http://localhost:8000/photos/uploadhead/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
-    payload = {'username': username, 'password': password, 'babyname': babyname,
-               'babyheight':babyheight, 'babyweight':babyweight, 'birthday':birthday,
-               'babysex':babysex, 'homeaddr':homeaddr, 'schooladdr':schooladdr}
-    #r = requests.post(url, data=payload, headers = headers, files = files)
+    #===========================================================================
+    # payload = {'username': username, 'password': password, 'babyname': babyname,
+    #            'babyheight':babyheight, 'babyweight':babyweight, 'birthday':birthday,
+    #            'babysex':babysex, 'homeaddr':homeaddr, 'schooladdr':schooladdr}
+    #===========================================================================
+    payload = {'username': username}
     r = requests.post(url, data = payload, files = files)
     fp = open("test.html",'w')
     fp.write(r.text)
