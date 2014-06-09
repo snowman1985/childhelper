@@ -19,11 +19,11 @@ from django.utils import http
 import requests
 
 def test_post_topic():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'shentest2'
+    password = 'shentest2'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    content = '呵呵，测试一下在圈子里发帖2。'
+    content = '呵呵，测试一下在圈子里发帖aaa。'
     url = 'http://localhost:8000/quan/posttopic/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password, 'content': content}
@@ -32,15 +32,31 @@ def test_post_topic():
     fp.write(r.text)
     fp.close()
 
+def test_add_comment():
+    username = 'shentest1'
+    password = 'shentest1'
+    topicid = 6
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    comment = '呵呵，测试一下在圈子里发个评论呗aaa。'
+    url = 'http://localhost:8000/quan/addcomment/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password, 'topicid':topicid, 'comment':comment}
+    r = requests.post(url, data=payload, headers = headers)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+
 def test_get_topic():
-    username = 'shentest2'
-    password = 'shentest2'
+    username = 'shentest1'
+    password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     url = 'http://localhost:8000/quan/getcircletopic/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(url, data=payload, headers = headers)
+    print(r.text)
     fp = open("test_gettopic.html",'w')
     fp.write(r.text)
     fp.close()
@@ -59,5 +75,6 @@ def test_get_topic_webview():
     fp.close()
 
 #print(test_post_topic())
-#print(test_get_topic())
-print(test_get_topic_webview())
+#print(test_add_comment())
+print(test_get_topic())
+#print(test_get_topic_webview())

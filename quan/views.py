@@ -23,29 +23,6 @@ from users.utils import *
 import json, base64, traceback, random
 import datetime,time
 
-@csrf_exempt   ###保证对此接口的访问不需要csrf
-def post_topic(request):
-    (authed, username, password, user) = auth_user(request)
-    if not authed or not user:
-        return HttpResponse('AUTH_FAILED')
-    content = request.POST.get('content')
-    if not content:
-        return HttpResponse('CONTENT_NULL')
-    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
-    topic = Topic(from_user = user,
-                 content =  content,
-                 create_time = timenow,
-                 update_time = timenow)
-    ret = topic.save()
-    topic_id = topic.id
-    circle = user.circle
-    circle.last_access = timenow # update the last-access time.
-    circle.save()
-    if topic_id and circle:
-        circle.add_topic(topic)
-        return HttpResponse('True')
-    else:
-        return HttpResponse('POST_TOPIC_ERROR')
 
 @csrf_exempt   ###保证对此接口的访问不需要csrf
 def post_topic_webview(request, current_uid):
@@ -72,38 +49,6 @@ def post_topic_webview(request, current_uid):
     else:
         return HttpResponse('POST_TOPIC_ERROR')
 
-def circletopic_encode(topics):
-    rets = []
-    number = len(list(topics))
-    for i in range(0, number):
-        topic = topics[i]
-        t = {}
-        t['from_user'] = topic.from_user
-        t['content'] = topic.content
-        t['create_time'] = topic.create_time
-        t['update_time'] = topic.update_time
-        c = []
-        t['comments'] = c
-        rets.append(t)
-    return rets
-
-@csrf_exempt       
-def get_circletopic(request):
-    (authed, username, password, user) = auth_user(request)
-    if not authed or not user:
-        return HttpResponse('AUTH_FAILED')
-    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
-    circle = user.circle
-    circle.last_access = timenow # update the last-access time.
-    circle.save()
-    topicids = circle.topic_ids
-    #print("##topicids:", topicids)
-    circletopics = []
-    for topicid in reversed(topicids):
-        topic = Topic.objects.get(id = topicid)
-        circletopics.append(topic)
-    #print("##circletopics:", circletopics)
-    return HttpResponse(circletopic_encode(circletopics))
 
 def get_topic_webview(request, uid):
     userid = int(uid)
@@ -131,18 +76,6 @@ def get_topic_webview(request, uid):
     #return t.render(Context(context))
     return HttpResponse(t.render(Context(context)))
 
-@csrf_exempt
-def addtopiccomment(request, topicid):
-    (authed, username, password, user) = auth_user(request)
-    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
-    circle = user.circle
-    circle.last_access = timenow # update the last-access time.
-    circle.save()
-    topic = Topic.objects.get(id=int(topicid))
-    comment = Comment(from_user = user.id, topic=topic, content=request.POST['comment'], create_time=timenow)
-    comment.save()
-    return get_circletopic(request)
-        
 
 @csrf_exempt
 def addcommentwebview(request, current_uid, topicid):
@@ -156,4 +89,99 @@ def addcommentwebview(request, current_uid, topicid):
     comment.save()
     return HttpResponseRedirect('/quan/gettopicwebview/%s/' % current_uid)
 
+
+
+@csrf_exempt   ###保证对此接口的访问不需要csrf
+def post_topic(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user:
+        return HttpResponse('AUTH_FAILED')
+    content = request.POST.get('content')
+    if not content:
+        return HttpResponse('CONTENT_NULL')
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+    topic = Topic(from_user = user,
+                 content =  content,
+                 create_time = timenow,
+                 update_time = timenow)
+    ret = topic.save()
+    topic_id = topic.id
+    circle = user.circle
+    circle.last_access = timenow # update the last-access time.
+    circle.save()
+    if topic_id and circle:
+        circle.add_topic(topic)
+        return HttpResponse('OK')
+    else:
+        return HttpResponse('POST_TOPIC_ERROR')
+
+
+@csrf_exempt
+def add_comment(request):
+    (authed, username, password, user) = auth_user(request)
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+    circle = user.circle
+    if not circle:
+        return HttpResponse('CIRCLE_NOT_FOUND_ERROR')
+    circle.last_access = timenow # update the last-access time.
+    circle.save()
+    topicid = request.POST.get('topicid')
+    if not topicid:
+        return HttpResponse('TOPICID_NULL_ERROR')
+    topic = Topic.objects.get(id=int(topicid))
+    if not topic:
+        return HttpResponse('TOPIC_NOT_FOUND_ERROR')
+    comment = Comment(from_user = user, topic=topic, content=request.POST['comment'], create_time=timenow)
+    comment.save()
+    if comment:
+        return HttpResponse('OK')
+    else:
+        return HttpResponse('ADD_COMMENT_ERROR')
+
+
+def comments_encode(comments):
+    rets = []
+    number = len(list(comments))
+    for i in range(0, number):
+        comment = comments[i]
+        c = {}
+        c['from_user'] = comment.from_user.username
+        c['content'] = comment.content
+        c['create_time'] = comment.create_time.strftime('%Y-%m-%d %H:%M:%S' )
+        print(c)
+        rets.append(c)
+    return rets
+
+def circletopic_encode(topics):
+    rets = []
+    number = len(list(topics))
+    for i in range(0, number):
+        topic = topics[i]
+        t = {}
+        t['topicid'] = topic.id
+        t['from_user'] = topic.from_user.username
+        t['content'] = topic.content
+        t['create_time'] = topic.create_time.strftime('%Y-%m-%d %H:%M:%S' )
+        t['update_time'] = topic.update_time.strftime('%Y-%m-%d %H:%M:%S' )
+        t['comments'] = comments_encode(Comment.objects.filter(topic = topic))
+        print(t)
+        rets.append(t)
+    return json.dumps(rets, ensure_ascii=False)
+
+
+@csrf_exempt       
+def get_circletopic(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user:
+        return HttpResponse('AUTH_FAILED')
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+    circle = user.circle
+    circle.last_access = timenow # update the last-access time.
+    circle.save()
+    topicids = circle.topic_ids
+    circletopics = []
+    for topicid in reversed(topicids):
+        topic = Topic.objects.get(id = topicid)
+        circletopics.append(topic)
+    return HttpResponse(circletopic_encode(circletopics))
 
