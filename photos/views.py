@@ -15,17 +15,24 @@ from .models import *
 
 @csrf_exempt
 def upload_head(request):
-    
-    if request.method == 'GET':
-        return HttpResponse('HTTP_METHOD_ERR')
-    print(request.POST)
-    print(request.FILES)
-    head_data = request.FILES['head']
-    photo = Photo()
-    photo.name = request.POST['username']
-    photo.head_orig = head_data
-    photo.save()
-    full_url = ''.join(['http://', request.META['HTTP_HOST'], photo.head_thumbnail.url])
-    print(full_url)
-    return HttpResponse(full_url)
+    try :
+      if request.method == 'GET':
+          return HttpResponse('HTTP_METHOD_ERR')
+      print('request.META: ')
+      print(request.META)
+      print('request.POST: ')
+      print(request.POST)
+      print('request.FILES: ')
+      print(request.FILES)
+      head_data = request.FILES['head']
+      photo = Photo()
+      photo.name = request.POST['username']
+      photo.head_orig = head_data
+      photo.save()
+      full_url = ''.join(['http://', request.META['HTTP_HOST'], photo.head_thumbnail.url])
+      print(full_url)
+      return HttpResponse(full_url)
+    except Exception as e:
+      print(str(e))
+      return HttpResponse(str(e))
     

@@ -30,6 +30,7 @@ def consumption_web_view(request, oid):
         picindex = random.randint(0,9)
         c['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindex)+'.jpg'
         c['comments'] = ConsumptionComment.objects.filter(consumptionid=o)
+        c['comments_size'] = len(c['comments'])
         html = t.render(Context(c))
         return HttpResponse(html)
     except ValueError:
