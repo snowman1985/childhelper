@@ -188,9 +188,18 @@ def getinfo(request):
         if not user:
             return HttpResponse('AUTH_FAILED')
         else:
+            baby = user.baby
             resp = {}
             resp['username'] = user.username
             resp['userid'] = user.id
+            resp['babyname'] = baby.name
+            resp['birthday'] = baby.birthday.strftime("%Y-%m-%d")
+            resp['sex'] = baby.sex
+            resp['weight'] = baby.weight
+            resp['height'] = baby.height
+            resp['city'] = baby.city
+            resp['homeaddr'] = baby.homeaddr
+            resp['schooladdr'] = baby.schooladdr
             #return HttpResponse(data_encode(resp))
             return HttpResponse(json.dumps(resp, ensure_ascii=False))
     except Exception as e:

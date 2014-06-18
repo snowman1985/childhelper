@@ -10,4 +10,5 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^uploadhead/', upload_head),
+    url(r'^gethead/', get_head),
 )

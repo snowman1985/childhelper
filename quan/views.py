@@ -176,6 +176,8 @@ def get_circletopic(request):
         return HttpResponse('AUTH_FAILED')
     timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     circle = user.circle
+    if not circle:
+        return HttpResponse('CIRCLE_NOT_EXIST')
     circle.last_access = timenow # update the last-access time.
     circle.save()
     topicids = circle.topic_ids

@@ -11,3 +11,11 @@ class Photo(models.Model):
                                       processors=[ResizeToFill(100, 100)],
                                       format='JPEG',
                                       options={'quality': 60})
+
+class Head(models.Model):
+    username = models.TextField(max_length=100,null=True)
+    head_orig = models.ImageField(upload_to='head',null=True,blank=True)
+    head_thumbnail = ImageSpecField(source='head_orig',
+                                      processors=[ResizeToFill(100, 100)],
+                                      format='JPEG',
+                                      options={'quality': 60})

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D # alias for Distance
-
+from photos.models import Head
 
 class Baby(models.Model):
     user = models.OneToOneField(User)

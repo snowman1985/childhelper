@@ -13,27 +13,32 @@ def testuploadhead():
     password = 'shentest04'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    babyname = 'shenruyi'
-    babyheight = 1.4
-    babyweight = 34
-    birthday = '2012-04-08'
-    babysex = 'girl'
-    homeaddr = '北京市海淀区紫金庄园'
-    schooladdr = '北京市万泉河路小学'
-    #files = {'file': open('/home/lyb/sjzl.mpg', 'rb')}
     head = open('head.jpg', 'rb')
     files = {'head' : head}
-    url = 'http://wjbb.cloudapp.net:8000/photos/uploadhead/'
+    url = 'http://localhost:8000/photos/uploadhead/'
     headers = {'content-Type': 'application/octet-stream'}
     #===========================================================================
     # payload = {'username': username, 'password': password, 'babyname': babyname,
     #            'babyheight':babyheight, 'babyweight':babyweight, 'birthday':birthday,
     #            'babysex':babysex, 'homeaddr':homeaddr, 'schooladdr':schooladdr}
     #===========================================================================
-    payload = {'username': username}
-    r = requests.post(url,headers = headers, data = payload, files = files)
+    payload = {'username': username, 'password': password}
+    r = requests.post(url, data = payload, files = files)
     fp = open("test.html",'w')
     fp.write(r.text)
     fp.close()
     
-testuploadhead()
+def testgethead():
+    username = 'shentest04'
+    password = 'shentest04'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    url = 'http://localhost:8000/photos/gethead/'
+    payload = {'username': username, 'password': password}
+    r = requests.post(url, data = payload)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+    
+#testuploadhead()
+testgethead()

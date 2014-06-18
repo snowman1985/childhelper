@@ -84,11 +84,11 @@ def testinformationcheck():
     return r.text
     
 def testgetinfo():
-    username = 'test01'
-    password = 'test01'
+    username = 'shentest1'
+    password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    url = 'http://localhost:80/user/getinfo/'
+    url = 'http://localhost:8000/user/getinfo/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(url, data=payload, headers = headers)
@@ -97,8 +97,8 @@ def testgetinfo():
     fp.close()
     return r.text
     
-#print(testgetinfo())
-print(testupdate())
+print(testgetinfo())
+#print(testupdate())
 #print(testregister())
 #print(testupdate())
 
