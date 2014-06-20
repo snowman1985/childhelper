@@ -158,8 +158,8 @@ def knowledge_list_encode(knowls):
         tags = knowl.keyword.split(';')
         t['id'] = knowl.id
         t['title'] = knowl.title
-        t['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
-        t['icon'] = 'http://wjbb.cloudapp.net:8001/icon/'+str(picindexes[i])+'.png'
+        t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(picindexes[i])+'.jpg'
+        t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(picindexes[i])+'.png'
         if knowl.abstract:
             t['Abstract'] = knowl.abstract
         else:
@@ -178,8 +178,8 @@ def shop_list_encode(shops):
         t = {}
         t['id'] = shop.id
         t['title'] = shop.name
-        t['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
-        t['icon'] = 'http://wjbb.cloudapp.net:8001/icon/'+str(picindexes[i])+'.png'
+        t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(picindexes[i])+'.jpg'
+        t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(picindexes[i])+'.png'
         if shop.abstract:
             t['Abstract'] = shop.abstract
         else:
@@ -198,8 +198,8 @@ def consumption_list_encode(consumptions):
         t = {}
         t['id'] = consumption.id
         t['title'] = consumption.name
-        t['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
-        t['icon'] = 'http://wjbb.cloudapp.net:8001/icon/'+str(picindexes[i])+'.png'
+        t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(picindexes[i])+'.jpg'
+        t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(picindexes[i])+'.png'
         if consumption.abstract:
             t['Abstract'] = consumption.abstract
         else:

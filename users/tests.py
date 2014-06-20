@@ -84,8 +84,8 @@ def testinformationcheck():
     return r.text
     
 def testgetinfo():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'sg'
+    password = 'sg'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     url = 'http://localhost:8000/user/getinfo/'

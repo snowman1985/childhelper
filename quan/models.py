@@ -33,7 +33,7 @@ class Circle(models.Model):
         return None
 
 
-def create_circle(user, source, curpoint, distance=5000):
+def create_circle(user, source, curpoint, distance=500000):
     samecircles = Circle.objects.filter(point__distance_lt=(curpoint, D(km=int(distance)/1000)))
     newcircleinfo = []
     for circle in samecircles:

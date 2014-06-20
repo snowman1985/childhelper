@@ -74,6 +74,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'ywbserver.middleware.SubdomainMiddleware',
 )
 
 ROOT_URLCONF = 'ywbserver.urls'
