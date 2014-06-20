@@ -16,7 +16,7 @@ from django.template import Context
 from ywbserver.settings import *
 
 def getknowllist(baby, number):
-    if(baby.birthday):
+    if(baby and baby.birthday):
         age= (int((date.today() - baby.birthday).days))
         response = knowledge_list_encode(get_knowls_byage(age, number))
     else:
@@ -93,14 +93,10 @@ def mobile_view_knowledges(request):
         print("##anonymous user")
         knowls = getknowllist_anonymous(request, knumber)
         return HttpResponse(json.dumps(knowls, ensure_ascii=False))
-        #return HttpResponse(data_encode(knowls))
     else:
         baby = Baby.objects.get(user=user)
-        if not baby:
-            return HttpResponse('BABY_DATA_NULL')
         knowls = getknowllist(baby, knumber)
         return HttpResponse(json.dumps(knowls, ensure_ascii=False)) 
-        #return HttpResponse(data_encode(knowls))
 
 @csrf_exempt
 def mobile_view_shops(request):

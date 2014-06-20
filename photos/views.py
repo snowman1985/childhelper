@@ -17,38 +17,41 @@ from .models import *
 @csrf_exempt
 def upload_head(request):
     try :
-      (authed, username, password, user) = auth_user(request)
-      if not authed or not user:
-        return HttpResponse('AUTH_FAILED')
-      if request.method == 'GET':
-          return HttpResponse('HTTP_METHOD_ERR')
-      head_data = request.FILES['head']
-      head = Head()
-      head.username = user.username
-      head.head_orig = head_data
-      head.save()
-      full_url = ''.join(['http://', request.META['HTTP_HOST'], head.head_thumbnail.url])
-      print(full_url)
-      return HttpResponse(full_url)
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse('AUTH_FAILED')
+        if request.method == 'GET':
+            return HttpResponse('HTTP_METHOD_ERR')
+        head_data = request.FILES['head']
+        head = Head()
+        head.username = user.username
+        head.head_orig = head_data
+        head.save()
+        full_url = ''.join(['http://', request.META['HTTP_HOST'], head.head_thumbnail.url])
+        print(full_url)
+        return HttpResponse(full_url)
     except Exception as e:
-      print('Exception:' + str(e))
-      return HttpResponse('UPLOAD_ERR')
+        print('Exception:' + str(e))
+        return HttpResponse('UPLOAD_ERR')
     
     
 @csrf_exempt
 def get_head(request):
     try :
-      (authed, username, password, user) = auth_user(request)
-      if not authed or not user:
-        return HttpResponse('AUTH_FAILED')
-      if request.method == 'GET':
-          return HttpResponse('HTTP_METHOD_ERR')
-      print(type(Head.objects.filter(username = user.username)))
-      heads = Head.objects.filter(username = user.username)
-      head = list(heads)[-1]
-      full_url = ''.join(['http://', request.META['HTTP_HOST'], head.head_thumbnail.url])
-      print(full_url)
-      return HttpResponse(full_url)
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse('AUTH_FAILED')
+        if request.method == 'GET':
+            return HttpResponse('HTTP_METHOD_ERR')
+        print(type(Head.objects.filter(username = user.username)))
+        heads = Head.objects.filter(username = user.username)
+        if len(heads) == 0:
+            full_url = ''.join(['http://', request.META['HTTP_HOST'], '/media/head/default.jpg'])
+        else:
+            head = list(heads)[-1]
+            full_url = ''.join(['http://', request.META['HTTP_HOST'], head.head_thumbnail.url])
+            print(full_url)
+        return HttpResponse(full_url)
     except Exception as e:
-      print('Exception:' + str(e))
-      return HttpResponse('GET_HEAD_ERR')
+        print('Exception:' + str(e))
+        return HttpResponse('GET_HEAD_ERR')
