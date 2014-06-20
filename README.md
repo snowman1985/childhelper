@@ -150,4 +150,14 @@ username base64编码过的用户名 password base64编码过的密码
 AUTH_FAILED 身份认证失败 
 正确返回 头像图片的url，图片大小100像素
 
+获取一个用户的个人信息
+POST domain/user/getinfo/
+必选参数： 
+username base64编码过的用户名 password base64编码过的密码 
+返回： 
+AUTH_FAILED 身份认证失败 
+正确返回 json，示例如下：
+{"username": "sg", "schooladdr": "", "babyname": "沈如意", "birthday": "2012-05-05", "height": 32.0, "city": "北京市", "homeaddr": "北京市万泉河路68号紫金庄园", "sex": "男", "weight": 56.0, "userid": 28}
+
+
 
