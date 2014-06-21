@@ -10,9 +10,11 @@ from .views import *
 urlpatterns = patterns('',
     url(r'^posttopicwebview/(\d+)/$', post_topic_webview, name='post_topic_webview'),
     url(r'^gettopicwebview/([0-9]*)/$', get_topic_webview, name='get_topic_webview'),
+    url(r'^gettopicbyidwebview/(\d+)/(\d+)/$', get_topicbyid_webview, name='get_topicbyid_webview'),
     url(r'^addcommentwebview/(\d+)/(\d+)/$', addcommentwebview, name='addcommentwebview'),
     
     url(r'^posttopic/', post_topic, name='post_topic'),
+    url(r'^getcircletopiclist/', get_circletopiclist, name='get_circle_topic_list'),
     url(r'^getcircletopic/', get_circletopic, name='get_circle_topic'),
     url(r'^addcomment/$', add_comment, name='addcomment'),
 )

@@ -19,22 +19,24 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'shentest04'
-    password = 'shentest04'
+    username = 'shentest07'
+    password = 'shentest07'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    babyname = 'shenruyi'
+    babyname = '%@'
     babyheight = 1.4
     babyweight = 34
-    birthday = '2012-04-08'
+    birthday = '2013-05-05'
     babysex = 'girl'
-    homeaddr = '北京市海淀区紫金庄园'
-    schooladdr = '北京市万泉河路小学'
+    homeaddr = '自行车  @#@# asdf'
+    schooladdr = 'asdfsadf  @@@ sdf'
     url = 'http://localhost:8000/user/register/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    #payload = {'username': username, 'password': password, 'babyname': babyname,
+    #           'babyheight':babyheight, 'babyweight':babyweight, 'birthday':birthday,
+    #         'babysex':babysex, 'homeaddr':homeaddr, 'schooladdr':schooladdr}
     payload = {'username': username, 'password': password, 'babyname': babyname,
-               'babyheight':babyheight, 'babyweight':babyweight, 'birthday':birthday,
-               'babysex':babysex, 'homeaddr':homeaddr, 'schooladdr':schooladdr}
+               'birthday':birthday, 'homeaddr':homeaddr, 'schooladdr':schooladdr}
     r = requests.post(url, data=payload, headers = headers)
     fp = open("test.html",'w')
     fp.write(r.text)
@@ -63,8 +65,8 @@ def testupdate():
     fp.close()
     
 def testinformationcheck():
-    username = 'shentest'
-    password = 'shentest'
+    username = 'hujun'
+    password = '123'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'shenruyi'
@@ -74,7 +76,7 @@ def testinformationcheck():
     babysex = 'girl'
     homeaddr = '北京市海淀区紫金庄园'
     schooladdr = '北京市万泉河路小学'
-    url = 'http://localhost:8000/user/update/'
+    url = 'http://www.yangwabao.com/user/informationcheck/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(url, data=payload, headers = headers)
@@ -97,9 +99,9 @@ def testgetinfo():
     fp.close()
     return r.text
     
-print(testgetinfo())
+#print(testgetinfo())
 #print(testupdate())
 #print(testregister())
 #print(testupdate())
-
+print(testinformationcheck())
 #print(testregister())

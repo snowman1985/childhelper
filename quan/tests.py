@@ -47,6 +47,20 @@ def test_add_comment():
     fp.write(r.text)
     fp.close()
 
+def test_get_topiclist():
+    username = 'shentest1'
+    password = 'shentest1'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    url = 'http://localhost:8000/quan/getcircletopiclist/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password}
+    r = requests.post(url, data=payload, headers = headers)
+    print(r.text)
+    fp = open("test_gettopic.html",'w')
+    fp.write(r.text)
+    fp.close()
+
 def test_get_topic():
     username = 'shentest1'
     password = 'shentest1'
@@ -76,5 +90,6 @@ def test_get_topic_webview():
 
 #print(test_post_topic())
 #print(test_add_comment())
-print(test_get_topic())
+#print(test_get_topic())
+print(test_get_topiclist())
 #print(test_get_topic_webview())

@@ -29,8 +29,8 @@ def testuploadhead():
     fp.close()
     
 def testgethead():
-    username = 'anonymous'
-    password = 'wjbb123'
+    username = 'shentest04'
+    password = 'shentest04'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     url = 'http://localhost:8000/photos/gethead/'

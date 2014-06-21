@@ -161,7 +161,7 @@ def knowledge_list_encode(knowls):
         else:
             t['Abstract'] = " "
         t['address'] = ""
-        t['link'] = DOMAIN + ("knowledge/webview/%d/" % knowl.id)
+        t['link'] = DOMAIN + ("/knowledge/webview/%d/" % knowl.id)
         rets.append(t)
     return rets
 
@@ -181,7 +181,7 @@ def shop_list_encode(shops):
         else:
             t['Abstract'] = " "
         t['address'] = shop.address
-        t['link'] = DOMAIN + ("shop/webview/%d/" % shop.id)
+        t['link'] = DOMAIN + ("/shop/webview/%d/" % shop.id)
         rets.append(t)
     return rets
 
@@ -201,6 +201,6 @@ def consumption_list_encode(consumptions):
         else:
             t['Abstract'] = " "
         t['address'] = consumption.address
-        t['link'] = DOMAIN + ("consumption/webview/%d/" % consumption.id)
+        t['link'] = DOMAIN + ("/consumption/webview/%d/" % consumption.id)
         rets.append(t)
     return rets

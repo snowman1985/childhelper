@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+DATA_DIR = '/opt'
+MEDIA_ROOT = os.path.join(DATA_DIR, "ywb-media")
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
@@ -114,7 +115,7 @@ SITE_ID = 1
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-LOGIN_URL = '/merchant/login/'
+#LOGIN_URL = '/merchant/login/'
 
 STATIC_URL = '/static/'
 
@@ -136,7 +137,7 @@ EMAIL_USE_TLS = True
 
 #DATABASE_ROUTERS = ['ywbweb.dbrouter.DBRouter',]
 
-DOMAIN = 'http://wjbb.cloudapp.net:80/'
+DOMAIN = 'http://wjbb.cloudapp.net:80'
 
 #for django-cron job. mark the circle as deleted if the user not access this circle for a long time.
 CRON_CLASSES = [

@@ -43,14 +43,8 @@ def get_head(request):
             return HttpResponse('AUTH_FAILED')
         if request.method == 'GET':
             return HttpResponse('HTTP_METHOD_ERR')
-        print(type(Head.objects.filter(username = user.username)))
-        heads = Head.objects.filter(username = user.username)
-        if len(heads) == 0:
-            full_url = ''.join(['http://', request.META['HTTP_HOST'], '/media/head/default.jpg'])
-        else:
-            head = list(heads)[-1]
-            full_url = ''.join(['http://', request.META['HTTP_HOST'], head.head_thumbnail.url])
-            print(full_url)
+        full_url = getheadurl(user)
+        print(full_url)
         return HttpResponse(full_url)
     except Exception as e:
         print('Exception:' + str(e))

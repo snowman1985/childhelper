@@ -20,6 +20,7 @@ from .models import *
 from datetime import *
 from .utils import *
 from users.utils import *
+from photos.models import *
 import json, base64, traceback, random
 import datetime,time
 
@@ -77,6 +78,28 @@ def get_topic_webview(request, uid):
     return HttpResponse(t.render(Context(context)))
 
 
+#根据topicid显示一个topic的详细信息webview
+def get_topicbyid_webview(request, userid, topicid):
+    try:
+        topic = Topic.objects.get(id = topicid)
+        if not topic:
+            return HttpResponse("INVALID_TOPICID")
+    except Exception as e:
+        return HttpResponse("INVALID_TOPICID")
+    try:
+        user = User.objects.get(id=userid)
+        if not topic:
+            return HttpResponse("INVALID_USERID")
+    except Exception as e:
+            return HttpResponse("INVALID_USERID")
+    context = {}
+    context['headurl'] = getheadurl(user)
+    context['topic'] = topic
+    context['current_uid'] = userid
+    t = get_template("quan/topic_webview.html")
+    return HttpResponse(t.render(Context(context)))
+
+
 @csrf_exempt
 def addcommentwebview(request, current_uid, topicid):
     userid = int(current_uid)
@@ -87,7 +110,7 @@ def addcommentwebview(request, current_uid, topicid):
     timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     comment = Comment(from_user = user, topic=topic, content=request.POST['comment'], create_time=timenow)
     comment.save()
-    return HttpResponseRedirect('/quan/gettopicwebview/%s/' % current_uid)
+    return HttpResponseRedirect('/quan/gettopicbyidwebview/%s/%s/' % (current_uid, topicid))
 
 
 
@@ -152,6 +175,24 @@ def comments_encode(comments):
         rets.append(c)
     return rets
 
+
+def circletopiclist_encode(topics):
+    rets = []
+    number = len(list(topics))
+    for i in range(0, number):
+        topic = topics[i]
+        t = {}
+        t['topicid'] = topic.id
+        t['from_user'] = topic.from_user.username
+        t['headurl'] = getheadurl(topic.from_user)
+        t['content'] = topic.content
+        t['comments_num'] = len(Comment.objects.filter(topic = topic))
+        t['create_time'] = topic.create_time.strftime('%Y-%m-%d %H:%M:%S' )
+        t['update_time'] = topic.update_time.strftime('%Y-%m-%d %H:%M:%S' )
+        rets.append(t)
+    return json.dumps(rets, ensure_ascii=False)
+
+
 def circletopic_encode(topics):
     rets = []
     number = len(list(topics))
@@ -167,6 +208,25 @@ def circletopic_encode(topics):
         print(t)
         rets.append(t)
     return json.dumps(rets, ensure_ascii=False)
+
+
+@csrf_exempt       
+def get_circletopiclist(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user:
+        return HttpResponse('AUTH_FAILED')
+    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+    circle = user.circle
+    if not circle:
+        return HttpResponse('CIRCLE_NOT_EXIST')
+    circle.last_access = timenow # update the last-access time.
+    circle.save()
+    topicids = circle.topic_ids
+    circletopics = []
+    for topicid in reversed(topicids):
+        topic = Topic.objects.get(id = topicid)
+        circletopics.append(topic)
+    return HttpResponse(circletopiclist_encode(circletopics))
 
 
 @csrf_exempt       
