@@ -19,17 +19,17 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'shentest07'
-    password = 'shentest07'
+    username = 'shentest13'
+    password = 'shentest13'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    babyname = '%@'
+    babyname = 'ruyi01'
     babyheight = 1.4
     babyweight = 34
     birthday = '2013-05-05'
     babysex = 'girl'
-    homeaddr = '自行车  @#@# asdf'
-    schooladdr = 'asdfsadf  @@@ sdf'
+    homeaddr = '湖南省长沙市'
+    schooladdr = 'xxx'
     url = 'http://localhost:8000/user/register/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     #payload = {'username': username, 'password': password, 'babyname': babyname,
@@ -43,8 +43,8 @@ def testregister():
     fp.close()
     
 def testupdate():
-    username = 'shentest04'
-    password = 'shentest04'
+    username = 'shentest12'
+    password = 'shentest12'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'shenruyi2'
@@ -52,7 +52,8 @@ def testupdate():
     babyweight = 34
     birthday = '2012-08-08'
     babysex = 'girl'
-    homeaddr = '北京市苏州街地铁站'
+    #homeaddr = '湖南省长沙市黄兴南路'
+    homeaddr = '北京市朝阳区'
     schooladdr = '北京市万泉河路小学'
     url = 'http://localhost:8000/user/update/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
@@ -102,6 +103,6 @@ def testgetinfo():
 #print(testgetinfo())
 #print(testupdate())
 #print(testregister())
-#print(testupdate())
-print(testinformationcheck())
+print(testupdate())
+#print(testinformationcheck())
 #print(testregister())

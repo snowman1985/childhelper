@@ -48,11 +48,11 @@ def test_add_comment():
     fp.close()
 
 def test_get_topiclist():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'hujun'
+    password = '123'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    url = 'http://localhost:8000/quan/getcircletopiclist/'
+    url = 'http://www.yangwabao.com/quan/getcircletopiclist/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(url, data=payload, headers = headers)

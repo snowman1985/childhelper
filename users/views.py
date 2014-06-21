@@ -16,10 +16,12 @@ from .models import *
 from datetime import *
 from .utils import *
 import json, base64, traceback, random
-import datetime, time
+import datetime, time, logging
 from utils.baidumap import *
 from baby.models import Baby
 from quan.models import *
+
+log=logging.getLogger('customapp')
 
 @csrf_exempt   ###保证对此接口的访问不需要csrf
 def check_user_name(username):
@@ -39,7 +41,7 @@ def register(request):
     
     if check_user_name(username) == "exist":
         return HttpResponse("DuplicateName")
-    print('user register, ' + username + password)
+    log.debug('user register %s  %s ' , username, password)
     baby = Baby()
     baby_name = request.POST.get('babyname')
     baby_height = request.POST.get('babyheight')
@@ -53,10 +55,10 @@ def register(request):
     baby.height = baby_height
     baby.weight = baby_weight
     try:
-      baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
+        baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
     except Exception as e:
-      print(e)
-      return HttpResponse('BIRTHDAY_FORMAT_ERR')
+        log.error(e)
+        return HttpResponse('BIRTHDAY_FORMAT_ERR')
     baby.sex = baby_sex
     baby.homeaddr = baby_homeaddr
     baby.type = 1   ###这个注册用户来自app
@@ -64,24 +66,24 @@ def register(request):
     #get latitude and longitude from baidumap.and save as a geo point.
     need_circle = False
     try:
-      if(baby_homeaddr):
-        baiduresp = get_baidu_location(baby_homeaddr)
-        if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
-            lng = baiduresp['result']['location']['lng']
-            lat = baiduresp['result']['location']['lat']
-            baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
-            need_circle = True
-            baby.city = get_baidu_city(lat, lng)
+        if(baby_homeaddr):
+            baiduresp = get_baidu_location(baby_homeaddr)
+            if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
+                lng = baiduresp['result']['location']['lng']
+                lat = baiduresp['result']['location']['lat']
+                baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
+                need_circle = True
+                baby.city = get_baidu_city(lat, lng)
+            else:
+                baby.homepoint = None
+                baby.city = None
         else:
             baby.homepoint = None
-            baby.city = None
-      else:
-        baby.homepoint = None
     except Exception as e:
-      print(e)
-      return HttpResponse('HOMEADDR_FORMAT_ERR')
+        log.error(e)
+        return HttpResponse('HOMEADDR_FORMAT_ERR')
     baby.schooladdr = baby_schooladdr
-    print('user register, add a new baby %s, birthday: %s' % (baby.name, baby.birthday.strftime("%Y-%m-%d")))
+    log.info('user register, add a new baby %s, birthday: %s' % (baby.name, baby.birthday.strftime("%Y-%m-%d")))
 # 产生一个新用户:
     user = User.objects.create_user(username = username, password = password)
     user.baby = baby
@@ -137,14 +139,18 @@ def update(request):
             lng = baiduresp['result']['location']['lng']
             lat = baiduresp['result']['location']['lat']
             baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
-            need_circle = True
             baby.city = get_baidu_city(lat, lng)
             baby.homeaddr = baby_homeaddr
+            print("##delete old circle")
+            if remove_circle(user, 1) != 'OK':
+                return HttpResponse('DEL_CIRCLE_ERR')
+            print("##re-create circle")
+            if create_circle(user, 1, baby.homepoint) != 'OK':
+                return HttpResponse('CREATE_CIRCLE_ERR')
         else:
-            baby.homepoint = None
-            baby.city = None
+            return HttpResponse('HOMEADDR_FORMAT_ERR')
       else:
-        baby.homepoint = None
+          return HttpResponse('HOMEADDR_FORMAT_ERR')
     except Exception as e:
       print(e)
       return HttpResponse('HOMEADDR_FORMAT_ERR')

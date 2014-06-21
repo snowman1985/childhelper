@@ -30,29 +30,43 @@ class Circle(models.Model):
         self.save()
             
     def get_topics(self):
-        return None
+        pass
 
 
 def create_circle(user, source, curpoint, distance=500000):
-    samecircles = Circle.objects.filter(point__distance_lt=(curpoint, D(km=int(distance)/1000)))
-    newcircleinfo = []
-    for circle in samecircles:
-        circle.circle_users.append(user.id)
-        circle.save()
-        newcircleinfo.append(circle.user.id)
-    newcircle = Circle(user=user, user_source=source, circle_users=newcircleinfo, point=curpoint, not_deleted = True, topic_ids = [])
-    newcircle.save()
+    try:
+        samecircles = Circle.objects.filter(point__distance_lt=(curpoint, D(km=int(distance) / 1000)))
+        if not samecircles:
+            return 'ERROR'
+        newcircleusers = []
+        for circle in samecircles:
+            circle.circle_users.append(user.id)
+            circle.save()
+            newcircleusers.append(circle.user.id)
+        newcircle = Circle(user=user, user_source=source, circle_users=newcircleusers, point=curpoint, not_deleted=True, topic_ids=[])
+        newcircle.save()
+        return 'OK'
+    except Exception as e:
+        print(e)
+        return 'ERROR'
 
 def create_circle_from_position(user, source, longitude, latitude, distance=5000):
     point = fromstr("POINT(%s %s)" % (longitude, latitude))
     create_circle(user, source, point, distance)
 
 def remove_circle(user, source):
-    del_circle = Circle.objects.get(user = user)
+    del_circle = user.circle
     if del_circle:
-        del_circle.not_deleted = False
         for circle in Circle.objects.all():
-            circle.circle_users.remove(del_circle.user.id)
+            if circle.not_deleted:
+                print(del_circle.user.id)
+                if del_circle.user.id in circle.circle_users:
+                    circle.circle_users.remove(del_circle.user.id)
+                    circle.save()
+        del_circle.delete()
+        return 'OK'
+    else:
+        return 'ERROR'
         
 
 class Topic(models.Model):

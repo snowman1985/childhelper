@@ -146,3 +146,95 @@ CRON_CLASSES = [
     # ...
 ]
 CIRCLE_IDLE_DAYS = 365
+
+
+LOG_DIR = '/var/log/ywb'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(name)s %(asctime)s %(message)s'
+        },
+        'verbose': {
+            'format': '%(levelname)s %(name)s %(asctime)s %(pathname)s %(module)s %(lineno)d %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'django_request':{
+            'format': '%(levelname)s %(asctime)s %(pathname)s %(module)s %(lineno)d %(message)s status_code:%(status_code)d',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'django_db_backends':{
+            'format': '%(levelname)s %(asctime)s %(pathname)s %(module)s %(lineno)d %(message)s duration:%(duration).3f sql:%(sql)s params:%(params)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'custom_log_file':{
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'django.log'),#you need define your VAR_ROOT variable that points to your project path,and mkdir a logs directory in your project root path.
+            'backupCount': 5,
+            'maxBytes': 16777216, # 16megabytes(16M)
+            'formatter': 'verbose'
+        },
+        'django_request_logfile':{
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'django_request_logfile.log'),#you need define your VAR_ROOT variable that points to your project path,and mkdir a logs directory in your project root path.
+            'backupCount': 5,
+            'maxBytes': 16777216, # 16megabytes(16M)
+            'formatter': 'django_request'
+        },
+        'django_db_backends_logfile':{
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'django_db_backends_logfile.log'),#you need define your VAR_ROOT variable that points to your project path,and mkdir a logs directory in your project root path.
+            'backupCount': 5,
+            'maxBytes': 16777216, # 16megabytes(16M)
+            'formatter': 'django_db_backends'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['mail_admins','django_request_logfile'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'django.db.backends': {
+            'handlers': ['django_db_backends_logfile',],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+        'customapp': {#then you can change the level to control your custom app whether to output the debug infomation
+            'handlers': ['custom_log_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'customapp.engine': {#then you can change the level to control your custom app whether to output the debug infomation
+            'handlers': ['custom_log_file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+}
+
