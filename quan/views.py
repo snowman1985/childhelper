@@ -93,7 +93,7 @@ def get_topicbyid_webview(request, userid, topicid):
     except Exception as e:
             return HttpResponse("INVALID_USERID")
     context = {}
-    context['headurl'] = getheadurl(user)
+    context['headurl'] = getheadurl(topic.from_user)
     context['topic'] = topic
     context['current_uid'] = userid
     t = get_template("quan/topic_webview.html")
