@@ -19,15 +19,16 @@ from django.utils import http
 import requests
 
 def test_post_topic():
-    username = 'shentest2'
-    password = 'shentest2'
+    username = 'shentest1'
+    password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    content = '呵呵，测试一下在圈子里发帖aaa。'
+    content = '呵呵，发布图片试一下。'
+    photo = open('photo.jpg', 'rb')
+    files = {'photo' : photo}
     url = 'http://localhost:8000/quan/posttopic/'
-    headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password, 'content': content}
-    r = requests.post(url, data=payload, headers = headers)
+    r = requests.post(url, data=payload,  files = files)
     fp = open("test.html",'w')
     fp.write(r.text)
     fp.close()
@@ -48,8 +49,8 @@ def test_add_comment():
     fp.close()
 
 def test_get_topiclist():
-    username = 'hujun'
-    password = '123'
+    username = 'sg'
+    password = 'sg'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     url = 'http://www.yangwabao.com/quan/getcircletopiclist/'
@@ -88,8 +89,8 @@ def test_get_topic_webview():
     fp.write(r.text)
     fp.close()
 
-#print(test_post_topic())
+print(test_post_topic())
 #print(test_add_comment())
 #print(test_get_topic())
-print(test_get_topiclist())
+#print(test_get_topiclist())
 #print(test_get_topic_webview())
