@@ -50,7 +50,7 @@ def post_topic_webview(request, current_uid):
     else:
         return HttpResponse('POST_TOPIC_ERROR')
 
-
+#webview方式展示一个用户的圈子里的所有帖子
 def get_topic_webview(request, uid):
     userid = int(uid)
     user = User.objects.get(id=userid)
@@ -74,7 +74,6 @@ def get_topic_webview(request, uid):
     context['topics'] = circletopics
     context['current_uid'] = uid
     t = get_template("quan/topics_webview.html") 
-    #return t.render(Context(context))
     return HttpResponse(t.render(Context(context)))
 
 
@@ -116,28 +115,35 @@ def addcommentwebview(request, current_uid, topicid):
 
 @csrf_exempt   ###保证对此接口的访问不需要csrf
 def post_topic(request):
-    (authed, username, password, user) = auth_user(request)
-    if not authed or not user:
-        return HttpResponse('AUTH_FAILED')
-    content = request.POST.get('content')
-    if not content:
-        return HttpResponse('CONTENT_NULL')
-    timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
-    topic = Topic(from_user = user,
-                 content =  content,
-                 create_time = timenow,
-                 update_time = timenow)
-    ret = topic.save()
-    topic_id = topic.id
-    circle = user.circle
-    circle.last_access = timenow # update the last-access time.
-    circle.save()
-    if topic_id and circle:
-        circle.add_topic(topic)
-        return HttpResponse('OK')
-    else:
-        return HttpResponse('POST_TOPIC_ERROR')
-
+    try:
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse('AUTH_FAILED')
+        content = request.POST.get('content')
+        if not content:
+            return HttpResponse('CONTENT_NULL')
+        timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+        topic = Topic(from_user = user,
+                     content =  content,
+                     create_time = timenow,
+                     update_time = timenow)
+        ret = topic.save()
+        photo_data = request.FILES['photo']
+        photo = Photo(topic = topic, photo_orig = photo_data)
+        ret = photo.save()
+        print(photo)
+        topic_id = topic.id
+        circle = user.circle
+        circle.last_access = timenow # update the last-access time.
+        circle.save()
+        if topic_id and circle:
+            circle.add_topic(topic)
+            return HttpResponse('OK')
+        else:
+            return HttpResponse('POST_TOPIC_ERROR')
+    except Exception as e:
+        print('Exception:' + str(e))
+        return HttpResponse('POST_TOPIC_EXCEPTION')
 
 @csrf_exempt
 def add_comment(request):
