@@ -2,26 +2,27 @@ from django.db import models
 from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
 from ywbserver import settings
+from quan.models import *
 
 # Create your models here.
 
 class Photo(models.Model):
-    name = models.TextField(max_length=100,null=True)
-    head_orig = models.ImageField(upload_to='head',null=True,blank=True)
-    head_thumbnail = ImageSpecField(source='head_orig',
+    topic = models.ForeignKey(Topic)
+    subdir = models.CharField(max_length=1024)
+    photo_orig = models.ImageField(upload_to='photos/'+datetime.datetime.utcnow().replace(tzinfo=utc).strftime("%Y-%m-%d"))
+    photo_thumbnail = ImageSpecField(source='photo_orig',
                                       processors=[ResizeToFill(100, 100)],
                                       format='JPEG',
                                       options={'quality': 60})
+    
 
 class Head(models.Model):
-    username = models.TextField(max_length=100,null=True)
+    username = models.TextField(max_length=500,null=True)
     head_orig = models.ImageField(upload_to='head',null=True,blank=True)
     head_thumbnail = ImageSpecField(source='head_orig',
                                       processors=[ResizeToFill(100, 100)],
                                       format='JPEG',
                                       options={'quality': 60})
-
-
 
 
 def getheadurl(user):

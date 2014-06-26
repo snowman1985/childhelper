@@ -27,6 +27,9 @@
       	</div>
       	<div class="col-md-8">
 			<h4>{{topic.content}}</h4>
+			{% for photo in topic.photo_set.all %}
+                <img src="{{photo.photo_orig.url}}" width="20%" height="20%">
+            {% endfor %}
       	</div>
     </div>
     
