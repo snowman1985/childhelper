@@ -14,6 +14,8 @@ from django.utils import http
 from datetime import *
 import json, base64
 
+
+
 def auth_user(request):
     print('begin to auth')
     if not DEBUG:

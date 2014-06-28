@@ -128,10 +128,11 @@ def post_topic(request):
                      create_time = timenow,
                      update_time = timenow)
         ret = topic.save()
-        photo_data = request.FILES['photo']
-        photo = Photo(topic = topic, photo_orig = photo_data)
-        ret = photo.save()
-        print(photo)
+        if  request.FILES and ('photo' in request.FILES.keys()) and request.FILES['photo'] != None:
+            photo_data = request.FILES['photo']
+            photo = Photo(topic = topic, photo_orig = photo_data)
+            ret = photo.save()
+            print(photo)
         topic_id = topic.id
         circle = user.circle
         circle.last_access = timenow # update the last-access time.

@@ -12,6 +12,7 @@ from django.utils import http
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D # alias for Distance
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate,login,logout  
 from .models import *
 from datetime import *
 from .utils import *
@@ -31,6 +32,35 @@ def check_user_name(username):
         return "available"
 
 @csrf_exempt
+def user_login(request):
+    try:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        username = http.urlsafe_base64_decode(username)
+        password = http.urlsafe_base64_decode(password)
+        username = username.decode()
+        password = password.decode()
+        user = authenticate(username=username, password=password)  
+        if user is not None:  
+            login(request, user)
+            return HttpResponse('OK')
+        else:  
+            #验证失败，暂时不做处理
+            return HttpResponse('AUTH_FAILED')
+    except Exception as e:
+        log.error(e)
+        return HttpResponse('LOGIN_EXCEPTION')
+  
+@csrf_exempt
+def user_logout(request):
+    try:
+        logout(request)
+        return HttpResponse('OK')
+    except Exception as e:
+        log.error(e)
+        return HttpResponse('LOGOUT_EXCEPTION')
+
+@csrf_exempt
 def register(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
@@ -38,7 +68,6 @@ def register(request):
     password = http.urlsafe_base64_decode(password)
     username = username.decode()
     password = password.decode()
-    
     if check_user_name(username) == "exist":
         return HttpResponse("DuplicateName")
     log.debug('user register %s  %s ' , username, password)
@@ -190,8 +219,11 @@ def informationcheck(request):
 @csrf_exempt
 def getinfo(request):
     try:
-        (authed, username, password, user) = auth_user(request)
-        if not user:
+        #(authed, username, password, user) = auth_user(request)
+#         if not user:
+#             return HttpResponse('AUTH_FAILED')
+        user = request.user
+        if not user.is_authenticated():
             return HttpResponse('AUTH_FAILED')
         else:
             baby = user.baby

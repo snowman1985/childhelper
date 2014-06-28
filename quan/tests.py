@@ -25,7 +25,8 @@ def test_post_topic():
     password = http.urlsafe_base64_encode(password.encode()).decode()
     content = '呵呵，发布图片试一下。'
     photo = open('photo.jpg', 'rb')
-    files = {'photo' : photo}
+    files = {'photo2' : photo}
+    #url = 'http://www.yangwabao.com/quan/posttopic/'
     url = 'http://localhost:8000/quan/posttopic/'
     payload = {'username': username, 'password': password, 'content': content}
     r = requests.post(url, data=payload,  files = files)
