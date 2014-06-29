@@ -87,12 +87,12 @@ def testinformationcheck():
     return r.text
     
 def testgetinfo():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'shen1'
+    password = 'shen1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    loginurl = 'http://localhost:8000/user/login/'
-    url = 'http://localhost:8000/user/getinfo/'
+    loginurl = 'http://www.yangwabao.com/user/login/'
+    url = 'http://www.yangwabao.com/user/getinfo/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)

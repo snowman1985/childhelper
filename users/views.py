@@ -36,16 +36,18 @@ def user_login(request):
     try:
         username = request.POST.get('username')
         password = request.POST.get('password')
+        print("username base64 is :" + username)
         username = http.urlsafe_base64_decode(username)
         password = http.urlsafe_base64_decode(password)
         username = username.decode()
         password = password.decode()
-        user = authenticate(username=username, password=password)  
+        user = authenticate(username=username, password=password)
+        print('user in user_login')
+        print(user)
         if user is not None:  
             login(request, user)
             return HttpResponse('OK')
         else:  
-            #验证失败，暂时不做处理
             return HttpResponse('AUTH_FAILED')
     except Exception as e:
         log.error(e)
@@ -223,6 +225,10 @@ def getinfo(request):
 #         if not user:
 #             return HttpResponse('AUTH_FAILED')
         user = request.user
+        print('req in getinfo:')
+        print(request)
+        print('---user in getinfo:')
+        print(user)
         if not user.is_authenticated():
             return HttpResponse('AUTH_FAILED')
         else:
@@ -238,7 +244,6 @@ def getinfo(request):
             resp['city'] = baby.city
             resp['homeaddr'] = baby.homeaddr
             resp['schooladdr'] = baby.schooladdr
-            #return HttpResponse(data_encode(resp))
             return HttpResponse(json.dumps(resp, ensure_ascii=False))
     except Exception as e:
         print(e)
