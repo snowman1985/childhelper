@@ -6,6 +6,7 @@ from django.contrib import auth
 from django.contrib.auth.models import User
 from django.utils import http
 from django.core import serializers
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import FormView, TemplateView, CreateView
 from datetime import *
 from users.utils import *
@@ -56,6 +57,7 @@ def web_view(request, kid):
     except ValueError:
         raise Http404()
 
+@csrf_exempt
 def collectknowl(request):
     (authed, username, password, user) = auth_user(request)
     if not authed or not user:
