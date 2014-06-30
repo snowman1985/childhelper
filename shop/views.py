@@ -19,17 +19,18 @@ import hashlib, time, random
 def web_view(request, oid):
     try:
         oid = int(oid)
-        o = Shop.objects.get(id = oid)
+        o = Merchant.objects.using('ywbwebdb').get(id = oid)
         t = get_template('shop/shop.html')
         c = {}
         c['shop_shopid'] = o.id
         c['shop_title'] = o.name
         c['shop_content'] = o.description
         c['shop_address'] = o.address
-        c['shop_url'] = o.url
+        c['shop_url'] = 'http://sj.yangwabao.com'
         picindex = random.randint(0,9)
         c['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindex)+'.jpg'
-        c['comments'] = ShopComment.objects.filter(shopid=o)
+        #c['comments'] = ShopComment.objects.filter(shopid=o)
+        c['comments'] = {}
         html = t.render(Context(c))
         return HttpResponse(html)
     except ValueError:

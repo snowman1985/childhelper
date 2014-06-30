@@ -35,10 +35,10 @@ def getshoplist(baby, number):
 
 def getconsumptionlist(baby, number):
     respones = None
-    if(baby.city):
-        response = consumption_list_encode(get_consumption_city(baby.city, number))
+    if(baby.homepoint):
+        response = consumption_list_encode(get_commercial_nearby(baby.homepoint, number))
     else:
-        response = consumption_list_encode(get_consumption_random(number))
+        response = consumption_list_encode(get_commercial_random(number))
     return response
 
 def getknowllist_anonymous(request, number):
@@ -53,7 +53,7 @@ def getshoplist_anonymous(request, number):
     return response
 
 def getconsumptionlist_anonymous(request, number):
-    response = consumption_list_encode(get_consumption_random(number))
+    response = consumption_list_encode(get_commercial_random(number))
     return response
 
 from django.views.decorators.csrf import csrf_exempt
@@ -176,14 +176,36 @@ def shop_list_encode(shops):
         t['title'] = shop.name
         t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(picindexes[i])+'.jpg'
         t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(picindexes[i])+'.png'
-        if shop.abstract:
-            t['Abstract'] = shop.abstract
-        else:
-            t['Abstract'] = " "
+#         if shop.abstract:
+#             t['Abstract'] = shop.abstract
+#         else:
+#             t['Abstract'] = " "
+        t['Abstract'] = shop.description
         t['address'] = shop.address
         t['link'] = DOMAIN + ("/shop/webview/%d/" % shop.id)
         rets.append(t)
     return rets
+
+# def consumption_list_encode(consumptions):
+#     rets = []
+#     number = len(list(consumptions))
+#     picindexes = random.sample((0,1,2,3,4,5,6,7,8,9), number)
+#     for i in range(0, number):
+#         consumption = consumptions[i]
+#         t = {}
+#         t['id'] = consumption.id
+#         t['title'] = consumption.name
+#         t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(picindexes[i])+'.jpg'
+#         t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(picindexes[i])+'.png'
+#         if consumption.abstract:
+#             t['Abstract'] = consumption.abstract
+#         else:
+#             t['Abstract'] = " "
+#         t['address'] = consumption.address
+#         t['link'] = DOMAIN + ("/consumption/webview/%d/" % consumption.id)
+#         rets.append(t)
+#     return rets
+
 
 def consumption_list_encode(consumptions):
     rets = []
@@ -193,14 +215,17 @@ def consumption_list_encode(consumptions):
         consumption = consumptions[i]
         t = {}
         t['id'] = consumption.id
-        t['title'] = consumption.name
+        t['title'] = consumption.title
         t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(picindexes[i])+'.jpg'
         t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(picindexes[i])+'.png'
-        if consumption.abstract:
-            t['Abstract'] = consumption.abstract
-        else:
-            t['Abstract'] = " "
-        t['address'] = consumption.address
+        t['Abstract'] = " "
+        t['address'] = " "
         t['link'] = DOMAIN + ("/consumption/webview/%d/" % consumption.id)
         rets.append(t)
     return rets
+
+
+
+
+
+

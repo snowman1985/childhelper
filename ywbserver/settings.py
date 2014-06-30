@@ -96,6 +96,14 @@ DATABASES = {
         'PORT': '5432',
         'ATOMIC_REQUESTS':'True',
     },
+    'ywbwebdb': {
+        'ENGINE':'django.contrib.gis.db.backends.postgis',
+        'NAME': 'ywbwebdb',
+        'USER': 'wjbb',
+        'PASSWORD': 'wjbb111',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
 }
 
 # Internationalization
