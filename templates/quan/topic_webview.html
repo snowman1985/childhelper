@@ -20,12 +20,12 @@
     <div class="container">
     
     <div class="row">  
-		<div class="col-sm-4 text-right">
-      		<img src="{{headurl}}" class="img-thumbnail" width="20%" height="20%">
+		<div class="col-sm-4 col-xs-4">
+      		<img src="{{headurl}}" class="img-thumbnail" width="100%" height="100%">
       		<h3 >{{topic.from_user.username}}</h3> 
       	</div>
-      	<div class="col-sm-8">
-      		<small><code>{{topic.create_time}}</code></small>
+      	<div class="col-sm-8 col-xs-8">
+			<small><code>{{topic.create_time}}</code></small>
 			<h4>{{topic.content}}</h4>
 			{% for photo in topic.photo_set.all %}
                 <img src="{{photo.photo_orig.url}}" width="80%" height="80%">
@@ -35,7 +35,7 @@
     
     <div class="row">  
       	<div class="col-sm-4 col-sm-offset-4">
-			<div class="row-fluid text-right">  
+			<div class="row text-right">  
       			<div class="accordion" id="accordion2">
 					<div class="accordion-group">
 						<div class="accordion-heading">
@@ -53,7 +53,7 @@
 				</div>
       		</div>
 
-        	<div class="row-fluid">
+        	<div class="row">
             	<table class="table">
                       	<tbody>
                       		{% for comment in topic.comment_set.all %}
