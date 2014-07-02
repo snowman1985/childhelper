@@ -40,6 +40,14 @@ class Commercial(models.Model):
     class Meta:
         app_label="merchant"
 
+class CommercialHistory(models.Model):
+    commercial_id = models.IntegerField()
+    merchant_id = models.IntegerField()
+    baby_id = models.IntegerField()
+   
+    class Meta:
+        app_label="merchant"
+
 class EduShop(Shop):
     pass
 
@@ -70,4 +78,6 @@ def get_shop_random(number=1):
     else:
         return random.sample(list(all), number)
     
-    
+def store_commercial_history(commercialid, merchantid, babyid):
+    commercialhistory = CommercialHistory(commercial_id=commercialid, merchant_id=merchantid, baby_id=babyid)
+    commercialhistory.save(using="ywbwebdb") 

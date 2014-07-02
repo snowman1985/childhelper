@@ -35,10 +35,18 @@ def getshoplist(baby, number):
 
 def getconsumptionlist(baby, number):
     respones = None
+    commercial_nearby = None
     if(baby.homepoint):
-        response = consumption_list_encode(get_commercial_nearby(baby.homepoint, number))
+        commercial_nearby = get_commercial_nearby(baby.homepoint, number)
+        response = consumption_list_encode(commercial_nearby)
     else:
-        response = consumption_list_encode(get_commercial_random(number))
+        commercial_nearby = get_commercial_random(number)
+        response = consumption_list_encode(commercial_nearby)
+    
+    for commercial in commercial_nearby:
+        print("##commercialid:", commercial.id, "##merchantid:", commercial.merchant.id, "##babyid:", baby.id)
+        store_commercial_history(commercial.id, commercial.merchant.id, baby.id) 
+
     return response
 
 def getknowllist_anonymous(request, number):

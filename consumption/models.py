@@ -67,8 +67,8 @@ def get_commercial_nearby(homepoint, number=1, distance = 5000):
     nearbym = Merchant.objects.using('ywbwebdb').filter(point__distance_lt=(point, D(km=int(distance)/1000)))
     count = nearbym.count()
     if number >= count:
-        print('Merchant nearby is not enough' )
-        merchants = Merchant.objects.using('ywbwebdb').all()[:number-1]
+        #merchants = Merchant.objects.using('ywbwebdb').all()[:number-1]
+        merchants = nearbym
         commercials = []
         for merchant in merchants:
             commercial_set = Commercial.objects.using('ywbwebdb').filter(merchant = merchant)
@@ -76,7 +76,8 @@ def get_commercial_nearby(homepoint, number=1, distance = 5000):
                 commercials.append(commercial_set[0])
         return commercials
     else:
-        merchants = Merchant.objects.using('ywbwebdb').all()[:number-1]
+        #merchants = Merchant.objects.using('ywbwebdb').all()[:number-1]
+        merchants = nearbym
         merchants = random.sample(list(merchants), number)
         commercials = []
         for merchant in merchants:
@@ -89,7 +90,6 @@ def get_commercial_random(number=1):
     all = Commercial.objects.using('ywbwebdb').all()
     count = all.count()
     if number >= count:
-        print('commercial random  is not enough')
         return list(all[:count])
     else:
         return random.sample(list(all), number)

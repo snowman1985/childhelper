@@ -221,16 +221,16 @@ def informationcheck(request):
 @csrf_exempt
 def getinfo(request):
     try:
-        #(authed, username, password, user) = auth_user(request)
-#         if not user:
-#             return HttpResponse('AUTH_FAILED')
-        user = request.user
-        print('req in getinfo:')
-        print(request)
-        print('---user in getinfo:')
-        print(user)
-        if not user.is_authenticated():
-            return HttpResponse('AUTH_FAILED')
+        (authed, username, password, user) = auth_user(request)
+        if not user:
+             return HttpResponse('AUTH_FAILED')
+        #user = request.user
+        #print('req in getinfo:')
+        #print(request)
+        #print('---user in getinfo:')
+        #print(user)
+        #if not user.is_authenticated():
+        #    return HttpResponse('AUTH_FAILED')
         else:
             baby = user.baby
             resp = {}
