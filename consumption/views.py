@@ -16,19 +16,39 @@ from weixin.baidumap import *
 import hashlib, time, random
 # Create your views here.
 
+#def consumption_web_view(request, oid):
+#    try:
+#        oid = int(oid)
+#        o = Consumption.objects.get(id = oid)
+#        t = get_template('consumption/consumption.html')
+#        c = {}
+#        c['consumption_consumptionid'] = o.id
+#        c['consumption_title'] = o.name
+#        c['consumption_content'] = o.description
+#        c['consumption_address'] = o.address
+#        c['consumption_url'] = o.url
+#        picindex = random.randint(0,9)
+#        c['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindex)+'.jpg'
+#        c['comments'] = ConsumptionComment.objects.filter(consumptionid=o)
+#        c['comments_size'] = len(c['comments'])
+#        html = t.render(Context(c))
+#        return HttpResponse(html)
+#    except ValueError:
+#        raise Http404()
+
 def consumption_web_view(request, oid):
     try:
         oid = int(oid)
-        o = Consumption.objects.get(id = oid)
+        o = Commercial.objects.using("ywbwebdb").get(id = oid)
         t = get_template('consumption/consumption.html')
         c = {}
         c['consumption_consumptionid'] = o.id
-        c['consumption_title'] = o.name
-        c['consumption_content'] = o.description
-        c['consumption_address'] = o.address
-        c['consumption_url'] = o.url
+        c['consumption_title'] = o.title
+        c['consumption_content'] = o.content
+        c['consumption_address'] = "None"
+        c['consumption_url'] = "None"
         picindex = random.randint(0,9)
-        c['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindex)+'.jpg'
+        c['pic'] = o.photo.url
         c['comments'] = ConsumptionComment.objects.filter(consumptionid=o)
         c['comments_size'] = len(c['comments'])
         html = t.render(Context(c))
