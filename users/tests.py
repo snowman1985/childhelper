@@ -19,8 +19,8 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'shentest13'
-    password = 'shentest13'
+    username = 'shentest1'
+    password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'ruyi01'
@@ -28,8 +28,8 @@ def testregister():
     babyweight = 34
     birthday = '2013-05-05'
     babysex = 'girl'
-    homeaddr = '湖南省长沙市'
-    schooladdr = 'xxx'
+    homeaddr = '北京市海淀区紫金庄园'
+    schooladdr = '北京市万泉庄小学'
     url = 'http://localhost:8000/user/register/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     #payload = {'username': username, 'password': password, 'babyname': babyname,
@@ -41,10 +41,11 @@ def testregister():
     fp = open("test.html",'w')
     fp.write(r.text)
     fp.close()
+    return r.text
     
 def testupdate():
-    username = 'shentest12'
-    password = 'shentest12'
+    username = 'shentest1'
+    password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'shenruyi2'
@@ -53,61 +54,86 @@ def testupdate():
     birthday = '2012-08-08'
     babysex = 'girl'
     #homeaddr = '湖南省长沙市黄兴南路'
-    homeaddr = '北京市朝阳区'
-    schooladdr = '北京市万泉河路小学'
-    url = 'http://localhost:8000/user/update/'
-    headers = {'content-Type': 'application/x-www-form-urlencoded'}
-    payload = {'username': username, 'password': password, 'babyname': babyname,
-               'babyheight':babyheight, 'babyweight':babyweight, 'birthday':birthday,
-               'babysex':babysex, 'homeaddr':homeaddr, 'schooladdr':schooladdr}
-    r = requests.post(url, data=payload, headers = headers)
-    fp = open("test.html",'w')
-    fp.write(r.text)
-    fp.close()
-    
-def testinformationcheck():
-    username = 'hujun'
-    password = '123'
-    username = http.urlsafe_base64_encode(username.encode()).decode()
-    password = http.urlsafe_base64_encode(password.encode()).decode()
-    babyname = 'shenruyi'
-    babyheight = 1.4
-    babyweight = 34
-    birthday = '2012-08-08'
-    babysex = 'girl'
     homeaddr = '北京市海淀区紫金庄园'
     schooladdr = '北京市万泉河路小学'
-    url = 'http://www.yangwabao.com/user/informationcheck/'
-    headers = {'content-Type': 'application/x-www-form-urlencoded'}
-    payload = {'username': username, 'password': password}
-    r = requests.post(url, data=payload, headers = headers)
-    fp = open("test.html",'w')
-    fp.write(r.text)
-    fp.close()
-    return r.text
-    
-def testgetinfo():
-    username = 'shen1'
-    password = 'shen1'
-    username = http.urlsafe_base64_encode(username.encode()).decode()
-    password = http.urlsafe_base64_encode(password.encode()).decode()
-    loginurl = 'http://www.yangwabao.com/user/login/'
-    url = 'http://www.yangwabao.com/user/getinfo/'
+    url = 'http://localhost:8000/user/update/'
+    loginurl = 'http://localhost:8000/user/login/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)
-    print(r.text)
     cookies = r.cookies
-    print(cookies)
-    r = requests.post(url, data=payload, headers = headers, cookies=cookies)
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = { 'babyname': babyname,
+               'babyheight':babyheight, 'babyweight':babyweight, 'birthday':birthday,
+               'babysex':babysex, 'homeaddr':homeaddr, 'schooladdr':schooladdr}
+    r = requests.post(url, data=payload, headers = headers, cookies = cookies)
     fp = open("test.html",'w')
     fp.write(r.text)
     fp.close()
     return r.text
     
-print(testgetinfo())
+    
+def testgetinfo():
+    username = 'shentest1'
+    password = 'shentest1'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    loginurl = 'http://localhost:8000/user/login/'
+    url = 'http://localhost:8000/user/info/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password}
+    r = requests.post(loginurl, data=payload, headers = headers)
+    cookies = r.cookies
+    print(cookies)
+    r = requests.get(url, headers = headers, cookies=cookies)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+    return r.text
+    
+def testuploadhead():
+    username = 'shentest1'
+    password = 'shentest1'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    loginurl = 'http://localhost:8000/user/login/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password}
+    r = requests.post(loginurl, data=payload, headers = headers)
+    cookies = r.cookies
+    head = open('head.jpg', 'rb')
+    files = {'head' : head}
+    url = 'http://localhost:8000/photos/uploadhead/'
+    headers = {'content-Type': 'application/octet-stream'}
+    payload = {'username': username, 'password': password}
+    r = requests.post(url, data = payload, files = files, cookies = cookies)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+    return r.text
+    
+def testgethead():
+    username = 'shentest1'
+    password = 'shentest1'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    loginurl = 'http://localhost:8000/user/login/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password}
+    r = requests.post(loginurl, data=payload, headers = headers)
+    cookies = r.cookies
+    url = 'http://localhost:8000/user/gethead/'
+    r = requests.get(url,cookies = cookies)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+    return r.text
+    
+#print(testuploadhead())
+#print(testgethead()) 
+#print(testgetinfo())
 #print(testupdate())
 #print(testregister())
-#print(testupdate())
+print(testupdate())
 #print(testinformationcheck())
 #print(testregister())

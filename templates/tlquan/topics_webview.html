@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Off Canvas Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/offcanvas.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="navbar navbar-fixed-top" role="navigation" style="background-color:#F0F0F0;">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <p>我的圈圈</p>
+        </div>
+      </div><!-- /.container -->
+    </div><!-- /.navbar -->
+
+    <div class="container">
+      <div class="row row-offcanvas-right">
+        <div class="col-md-8">
+        
+           <label>快说点什么吧～</label>
+              <form action="/quan/posttopicwebview/{{current_uid}}/"  method="post">
+                    <textarea name="topic_content" cols="60" rows="5"></textarea>
+                    <input type="submit" value="发布" />
+                    <br>
+			  </form>
+        
+                   <div class="list-group">
+                   {%for topic in topics%}
+                  <div href="#" class="list-group-item">
+                    <h4 class="list-group-item-text">{{topic.content}}</h4>
+                    <h6 class="list-group-item-heading">{{topic.from_user.username}}</h6>
+                    <h6 class="list-group-item-heading">{{topic.create_time}}</h6>
+                    <label>评论</label>
+                      <ul>
+                      {% for comment in topic.comment_set.all %}
+                        <li>{{comment.from_user.username}} : {{comment.content}}  时间：{{comment.create_time}}</li>
+                      {% endfor %}
+					  </ul>
+                  <label>写评论</label>
+                  <form action="/quan/addcommentwebview/{{current_uid}}/{{topic.id}}/" method="post">
+                    <textarea name="comment" cols="40" rows="1"></textarea>
+                    <input type="submit" value="发布" />
+                    <br>
+					</form>
+                  </div>
+                  {%endfor%}
+                   </div>
+        </div>
+      </div>
+    </div>
+
+      <hr>
+
+      <footer>
+        <p>&copy; Company 2013</p>
+      </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"></script>
+    <script src="/static/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/static/js/offcanvas.js"></script>
+  </body>
+</html>
+

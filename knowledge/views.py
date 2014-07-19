@@ -15,12 +15,19 @@ import base64, json, random, math
 from django.template.loader import get_template
 from django.template import Context
 from .forms import *
+from ywbserver.settings import *
 # Create your views here.
 
-def web_view(request, kid):
+def web_view(request):
     try:
+        kid = request.GET.get('id')
+        if kid == None or kid =="":
+            return HttpResponseNotFound("Not Found")
         kid = int(kid)
-        k = Knowledge.objects.get(id = kid)
+        try:
+            k = Knowledge.objects.get(id = kid)
+        except Knowledge.DoesNotExist:
+            return HttpResponseNotFound("Not Found")
         content = k.content
         html = content
         adaptorstr = '''<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1" />'''
@@ -57,31 +64,121 @@ def web_view(request, kid):
     except ValueError:
         raise Http404()
 
-@csrf_exempt
-def collectknowl(request):
-    (authed, username, password, user) = auth_user(request)
-    if not authed or not user:
-        return HttpResponse('AUTH_FAILED')
-    knowlid = request.POST.get('id')
-    if knowlid == None or knowlid =="":
-        return HttpResponse('NULL_ID')
-    try:
-        collection_record = KnowledgeCollection.objects.get(user_id = user.id)
-    except KnowledgeCollection.DoesNotExist:
-        new_collection_record = KnowledgeCollection.objects.create()
-        new_collection_record.user_id = user.id
-        new_collection_record.collection_list = '|%s|' % knowlid
-        new_collection_record.save()
-        return HttpResponse('True')
-    else:
-        collection_list = collection_record.collection_list
-        if collection_list.find('|%s|'%knowlid) < 0:
-            collection_record.collection_list = '%s%s|'%(collection_list,knowlid)
-            collection_record.save()
-        return HttpResponse('True')
-
 
 class KnowledgeFormView(CreateView):
     template_name = 'knowledge/knowledgeform.html'
     form_class = KnowledgeForm
     model = Knowledge
+    
+
+def knowledge_list_encode(knowls):
+    rets = []
+    number = len(list(knowls))
+    picindexes = random.sample((0,1,2,3,4,5,6,7,8,9), number)
+    for i in range(0, number):
+        knowl = knowls[i]
+        t = {}
+        tags = knowl.keyword.split(';')
+        t['id'] = knowl.id
+        t['title'] = knowl.title
+        t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(picindexes[i])+'.jpg'
+        t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(picindexes[i])+'.png'
+        if knowl.abstract:
+            t['Abstract'] = knowl.abstract
+        else:
+            t['Abstract'] = " "
+        t['address'] = ""
+        t['link'] = DOMAIN + ("/knowledge/webview/%d/" % knowl.id)
+        rets.append(t)
+    return rets
+
+
+def getknowllist(baby, number):
+    if(baby and baby.birthday):
+        age= (int((date.today() - baby.birthday).days))
+        response = knowledge_list_encode(get_knowls_byage(age, number))
+    else:
+        response = knowledge_list_encode(get_knowls_random(number))
+    return response
+
+
+def getknowllist_anonymous(request, number):
+    if not request.GET.get('age'):
+        print("get knowlist randomly.")
+        return knowledge_list_encode(get_knowls_random(number))
+    age = int(request.GET.get('age'))
+    print("get knowlist by age %d" % age)
+    return knowledge_list_encode(get_knowls_byage(age, number))
+     
+
+def list_knowledge(request):
+    try:
+        if request.method != 'GET':
+            return HttpResponse('HTTP_METHOD_ERR')
+        knumber = int(request.GET.get('number'))
+        if knumber == None:
+            return HttpResponse('PARAMETER_NULL_number')
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            knowls = getknowllist_anonymous(request, knumber)
+            return HttpResponse(json.dumps(knowls, ensure_ascii=False))
+        else:
+            baby = Baby.objects.get(user=user)
+            knowls = getknowllist(baby, knumber)
+            return HttpResponse(json.dumps(knowls, ensure_ascii=False))
+    except Exception as e:
+        print('Exception:' + str(e))
+        return HttpResponse('EXCEPTION')
+
+
+@csrf_exempt
+def collectknowl(request):
+    try:
+        if request.method == 'GET':
+                return HttpResponse('HTTP_METHOD_ERR')
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse('AUTH_FAILED')
+        knowlid = request.POST.get('id')
+        if knowlid == None or knowlid =="":
+            return HttpResponse('NULL_ID')
+        else:
+            knowlid = int(knowlid)
+        try:
+            collection_record = KnowledgeCollection.objects.get(user = user)
+        except KnowledgeCollection.DoesNotExist:
+            new_collection_record = KnowledgeCollection(user = user, collections = [])
+            new_collection_record.collections.append(knowlid)
+            new_collection_record.save()
+            return HttpResponse('OK')
+        else:
+            if knowlid not in collection_record.collections:
+                collection_record.collections.append(knowlid)
+                collection_record.save()
+            return HttpResponse('OK')
+    except Exception as e:
+        print('Exception:' + str(e))
+        return HttpResponse('EXCEPTION')
+
+
+def list_collection(request):
+    try:
+        if request.method != 'GET':
+            return HttpResponse('HTTP_METHOD_ERR')
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse('AUTH_FAILED')
+        knumber = request.GET.get('number')
+        if knumber == None:
+            knumber = 5
+        else:
+            knumber = int(knumber)
+        collection = user.knowledgecollection
+        if not collection:
+            return HttpResponse(json.dumps({}, ensure_ascii=False))
+        knowlids = collection.collections
+        knowls = get_knowls_byids(knowlids)
+        return HttpResponse(json.dumps(knowledge_list_encode(knowls), ensure_ascii=False))
+    except Exception as e:
+        print('Exception:' + str(e))
+        return HttpResponse('EXCEPTION')

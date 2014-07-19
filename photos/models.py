@@ -2,18 +2,19 @@ from django.db import models
 from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
 from ywbserver import settings
-from quan.models import *
-
+import datetime
+from django.utils.timezone import utc
 # Create your models here.
 
-class Photo(models.Model):
-    topic = models.ForeignKey(Topic)
+class PhotoBase(models.Model):
     subdir = models.CharField(max_length=1024)
     photo_orig = models.ImageField(upload_to='photos/'+datetime.datetime.utcnow().replace(tzinfo=utc).strftime("%Y-%m-%d"))
     photo_thumbnail = ImageSpecField(source='photo_orig',
                                       processors=[ResizeToFill(100, 100)],
                                       format='JPEG',
                                       options={'quality': 60})
+    class Meta:
+      abstract=True
     
 
 class Head(models.Model):

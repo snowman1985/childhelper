@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.join("/root","workspace","ywbserver"))
 from django.core.management import *
 from ywbserver import settings
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ywbserver.settings")
-from shop.models import *
+from appmerchant.models import *
 from utils.baidumap import *
 from django.contrib.gis.geos import fromstr
 import psycopg2

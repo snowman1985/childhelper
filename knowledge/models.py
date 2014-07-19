@@ -1,5 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 import base64, json, random, math
+import dbarray
+
 
 class Knowledge(models.Model):
     title = models.CharField(max_length=1000)
@@ -12,8 +15,8 @@ class Knowledge(models.Model):
     url = models.CharField(max_length=1000)
 
 class KnowledgeCollection(models.Model):
-    user_id = models.IntegerField(10,null=True)
-    collection_list = models.CharField(max_length=20000,null=True)
+    user = models.OneToOneField(User)
+    collections = dbarray.IntegerArrayField()
 
 
 def get_knowls_byage(age, number = 5):
@@ -33,3 +36,8 @@ def get_knowls_random(number = 5):
     else:
         return random.sample(list(knowls), number)
     
+def get_knowls_byids(ids):
+    if not ids:
+        return None
+    knowls =Knowledge.objects.filter(id__in = ids)
+    return knowls

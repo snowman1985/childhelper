@@ -17,4 +17,5 @@ class Baby(models.Model):
     homeaddr = models.TextField(max_length=100,null=True)
     schooladdr = models.TextField(max_length=100,null=True)
     homepoint = models.PointField(null=True)
+    schoolpoint = models.PointField(null=True)
     objects = models.GeoManager()

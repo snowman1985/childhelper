@@ -8,7 +8,7 @@ import traceback
 import base64, json, random, math
 from datetime import datetime
 
-from shop.models import *
+from appmerchant.models import *
 
 
 def weixinmsg_to_map(rawstr):

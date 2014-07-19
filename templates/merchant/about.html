@@ -1,0 +1,46 @@
+{% extends "merchant/base.html" %}
+
+{% block title %}关于养娃宝{% endblock %}
+
+{% block customcss %}
+    <!-- Custom styles for this template -->
+    <link href="/static/css/offcanvas.css" rel="stylesheet">
+    <link href="/static/css/pagefooter.css?v=1" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+ <div class="container">
+  <ul class="nav nav-pills" role="tablist">
+    <li class="active"><a href="#introduction" role="tab" data-toggle="tab" style="font-weight:bold; font-size:20px">关于养娃宝</a></li>
+    <li><a href="#services" role="tab" data-toggle="tab" style="font-weight:bold; font-size:20px">产品和服务</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="introduction">
+      <p style="margin:10px; line-height:30px; font-weight:bold; font-size:20px" class="text-info">养娃宝是一个为0-12岁宝宝的父母量身打造的个性化平台，为父母提供专业的育儿知识，所在位置周边的商家和服务，以及方便彼此交流宝宝成长经验的家圈校圈等。</p>
+      <p style="margin:10px; line-height:30px; font-weight:bold; font-size:20px" class="text-info">我们提供有ANDROID客户端，IPHONE客户端，微信公众服务号，以及商家发布平台。</p>
+      <p style="margin:10px; line-height:30px; font-weight:bold; font-size:20px" class="text-info">在商家服务平台，用户可以注册商家，发布商家信息，养娃宝平台会将商家信息及时展示给相关的宝宝父母</p>
+    </div>
+    <div class="tab-pane" id="services">
+    <p style="margin-top:20px; font-weight:bold; padding-left:20px; font-size:20px" class="text-success">ANDROID客户端</p>
+    <p style="margin-top:5px;  font-weight:bold; padding-left:20px; font-size:20px" class="text-success">IPHONE客户端</p>
+    <p style="margin-top:5px;  font-weight:bold; padding-left:20px; font-size:20px" class="text-success">微信公众服务号</p>
+    <p style="margin-top:5px;  font-weight:bold; padding-left:20px; font-size:20px" class="text-success">商家WEB平台</p>
+
+    </div>
+  </div>
+  <!-- <div class="row">
+      <div  style="display:block;width:100px">
+        <p style="color:red; font-sytle:italic; font-size:20px">关于养娃宝</p>
+      </div>
+  </div> -->
+  
+{% endblock %}
+
+{% block customjs %}
+    <script src="/static/js/offcanvas.js"></script>
+{% endblock %}
+
+<!--  <div style="position:absolute; bottom:0px; height:0px; width:100%">
+    <p style="text-align:center">&copy; 养娃宝 2014</p>
+  </div> -->
+

@@ -20,7 +20,8 @@ import json, base64, traceback, random
 import datetime, time, logging
 from utils.baidumap import *
 from baby.models import Baby
-from quan.models import *
+from jiaquan.models import *
+from photos.models import *
 
 log=logging.getLogger('customapp')
 
@@ -34,16 +35,16 @@ def check_user_name(username):
 @csrf_exempt
 def user_login(request):
     try:
+        if request.method == "GET":
+            return HttpResponse('HTTP_METHOD_ERR')
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print("username base64 is :" + username)
+        print("user login username base64 is :" + username)
         username = http.urlsafe_base64_decode(username)
         password = http.urlsafe_base64_decode(password)
         username = username.decode()
         password = password.decode()
         user = authenticate(username=username, password=password)
-        print('user in user_login')
-        print(user)
         if user is not None:  
             login(request, user)
             return HttpResponse('OK')
@@ -51,152 +52,182 @@ def user_login(request):
             return HttpResponse('AUTH_FAILED')
     except Exception as e:
         log.error(e)
-        return HttpResponse('LOGIN_EXCEPTION')
+        return HttpResponse('EXCEPTION')
   
 @csrf_exempt
 def user_logout(request):
     try:
+        if request.method == "GET":
+            return HttpResponse('HTTP_METHOD_ERR')
+        (authed, username, password, user) = auth_user(request)
+        if not user or not authed:
+             return HttpResponse('AUTH_FAILED')
         logout(request)
         return HttpResponse('OK')
     except Exception as e:
         log.error(e)
-        return HttpResponse('LOGOUT_EXCEPTION')
+        return HttpResponse('EXCEPTION')
 
 @csrf_exempt
 def register(request):
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    username = http.urlsafe_base64_decode(username)
-    password = http.urlsafe_base64_decode(password)
-    username = username.decode()
-    password = password.decode()
-    if check_user_name(username) == "exist":
-        return HttpResponse("DuplicateName")
-    log.debug('user register %s  %s ' , username, password)
-    baby = Baby()
-    baby_name = request.POST.get('babyname')
-    baby_height = request.POST.get('babyheight')
-    baby_weight = request.POST.get('babyweight')
-    baby_birthday = request.POST.get('birthday')
-    baby_sex = request.POST.get('babysex')
-    baby_homeaddr = request.POST.get('homeaddr')
-    baby_schooladdr = request.POST.get('schooladdr')
-    
-    baby.name = baby_name
-    baby.height = baby_height
-    baby.weight = baby_weight
     try:
-        baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
-    except Exception as e:
-        log.error(e)
-        return HttpResponse('BIRTHDAY_FORMAT_ERR')
-    baby.sex = baby_sex
-    baby.homeaddr = baby_homeaddr
-    baby.type = 1   ###这个注册用户来自app
-    
-    #get latitude and longitude from baidumap.and save as a geo point.
-    need_circle = False
-    try:
-        if(baby_homeaddr):
-            baiduresp = get_baidu_location(baby_homeaddr)
-            if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
-                lng = baiduresp['result']['location']['lng']
-                lat = baiduresp['result']['location']['lat']
-                baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
-                need_circle = True
-                baby.city = get_baidu_city(lat, lng)
+        if request.method == "GET":
+            return HttpResponse('HTTP_METHOD_ERR')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        username = http.urlsafe_base64_decode(username)
+        password = http.urlsafe_base64_decode(password)
+        username = username.decode()
+        password = password.decode()
+        if check_user_name(username) == "exist":
+            return HttpResponse("DUMPLICATE_NAME")
+        log.debug('user register %s  %s ' , username, password)
+        baby = Baby()
+        baby_name = request.POST.get('babyname')
+        baby_height = request.POST.get('babyheight')
+        baby_weight = request.POST.get('babyweight')
+        baby_birthday = request.POST.get('birthday')
+        baby_sex = request.POST.get('babysex')
+        baby_homeaddr = request.POST.get('homeaddr')
+        baby_schooladdr = request.POST.get('schooladdr')
+        baby.name = baby_name
+        baby.height = baby_height
+        baby.weight = baby_weight
+        try:
+            baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
+        except Exception as e:
+            log.error(e)
+            return HttpResponse('BIRTHDAY_FORMAT_ERR')
+        baby.sex = baby_sex
+        baby.type = 1   ###这个注册用户来自app
+        #get latitude and longitude from baidumap.and save as a geo point.
+        need_circle = False
+        try:
+            if(baby_homeaddr):
+                baiduresp = get_baidu_location(baby_homeaddr)
+                if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
+                    lng = baiduresp['result']['location']['lng']
+                    lat = baiduresp['result']['location']['lat']
+                    baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
+                    baby.city = get_baidu_city(lat, lng)
+                    baby.homeaddr = baby_homeaddr
+                    need_circle = True
+                else:
+                    baby.homepoint = None
+                    baby.city = None
+                    baby.homeaddr = None
             else:
                 baby.homepoint = None
                 baby.city = None
-        else:
+                baby.homeaddr = None
+        except Exception as e:
             baby.homepoint = None
+            baby.city = None
+            baby.homeaddr = None
+            log.error(e)
+            return HttpResponse('HOMEADDR_FORMAT_ERR')
+        ##try to save the school address
+        try:
+            if(baby_schooladdr):
+                baiduresp = get_baidu_location(baby_schooladdr)
+                if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
+                    lng = baiduresp['result']['location']['lng']
+                    lat = baiduresp['result']['location']['lat']
+                    baby.schooladdr = fromstr("POINT(%s %s)" % (lng, lat))
+                    baby.schooladdr = baby_schooladdr
+                    need_circle = True
+                else:
+                    baby.schooladdr = None
+                    baby.schooladdr = None
+            else:
+                baby.schooladdr = None
+                baby.schooladdr = None
+        except Exception as e:
+            baby.schooladdr = None
+            baby.schooladdr = None
+            log.error(e)
+            return HttpResponse('SCHOOLADDR_FORMAT_ERR')
+        log.info('user register, add a new baby %s, birthday: %s' % (baby.name, baby.birthday.strftime("%Y-%m-%d")))
+    # 产生一个新用户:
+        user = User.objects.create_user(username = username, password = password)
+        user.baby = baby
+        user.save()
+        baby.save()
+        if baby is None:
+            return HttpResponse("EXCEPTION")
+        else:
+            if need_circle:
+                print("##create circle for user " + user.username)
+                create_circle(user, 1, baby.homepoint)
+            return HttpResponse("OK")
     except Exception as e:
-        log.error(e)
-        return HttpResponse('HOMEADDR_FORMAT_ERR')
-    baby.schooladdr = baby_schooladdr
-    log.info('user register, add a new baby %s, birthday: %s' % (baby.name, baby.birthday.strftime("%Y-%m-%d")))
-# 产生一个新用户:
-    user = User.objects.create_user(username = username, password = password)
-    user.baby = baby
-    user.save()
-    baby.save()
-    if need_circle:
-        print("##create circle")
-        create_circle(user, 1, baby.homepoint)
-    response = 'False'
-    if baby is None:
-        response = 'False'
-    else:
-        response = 'True'
-    return HttpResponse(response)
+        return HttpResponse("EXCEPTION")
 
 @csrf_exempt
 def update(request):
-    (authed, username, password, user) = auth_user(request)
-    if not authed or not user:
-        return HttpResponse('AUTH_FAILED')
-    baby_height = request.POST.get('babyheight')
-    baby_weight = request.POST.get('babyweight')
-    baby_birthday = request.POST.get('birthday')
-    baby_sex = request.POST.get('babysex')
-    baby_name = request.POST.get('babyname')
-    baby_homeaddr = request.POST.get('homeaddr')
-    baby_schooladdr = request.POST.get('schooladdr')
-    print(user)
-    baby = User.objects.get(id=user.id).baby
-    print(baby)
-    if not baby:
-        response = 'BABY_INFO_NULL'
-        return HttpResponse(response)
-    if baby_weight:
-        baby.weight = float(baby_weight)
-    if baby_height:
-        baby.height = float(baby_height)
     try:
-      if baby_birthday:
-        baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
-    except Exception as e:
-      print(e)
-      return HttpResponse('BIRTHDAY_FORMAT_ERR')
-    print('user update, update baby info %s, birthday: %s' % (baby.name, baby_birthday))
-    if baby_sex:
-        baby.sex = baby_sex
-    if baby_name:
-        baby.name = baby_name
-    try:
-      if(baby_homeaddr):
-        baiduresp = get_baidu_location(baby_homeaddr)
-        if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
-            lng = baiduresp['result']['location']['lng']
-            lat = baiduresp['result']['location']['lat']
-            baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
-            baby.city = get_baidu_city(lat, lng)
-            baby.homeaddr = baby_homeaddr
-            print("##delete old circle")
-            if remove_circle(user, 1) != 'OK':
-                return HttpResponse('DEL_CIRCLE_ERR')
-            print("##re-create circle")
-            if create_circle(user, 1, baby.homepoint) != 'OK':
-                return HttpResponse('CREATE_CIRCLE_ERR')
-        else:
-            return HttpResponse('HOMEADDR_FORMAT_ERR')
-      else:
-          return HttpResponse('HOMEADDR_FORMAT_ERR')
-    except Exception as e:
-      print(e)
-      return HttpResponse('HOMEADDR_FORMAT_ERR')
-
-    if baby_schooladdr:
-        baby.schooladdr = baby_schooladdr
-    print('user update info: ')
-    print(request.POST)
-    baby.save()
-    response = 'False'
-    if baby is None:
+        if request.method == "GET":
+            return HttpResponse('HTTP_METHOD_ERR')
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse('AUTH_FAILED')
+        baby_height = request.POST.get('babyheight')
+        baby_weight = request.POST.get('babyweight')
+        baby_birthday = request.POST.get('birthday')
+        baby_sex = request.POST.get('babysex')
+        baby_name = request.POST.get('babyname')
+        baby_homeaddr = request.POST.get('homeaddr')
+        baby_schooladdr = request.POST.get('schooladdr')
+        baby = User.objects.get(id=user.id).baby
+        if not baby:
+            response = 'BABY_INFO_NULL'
+            return HttpResponse(response)
+        if baby_weight:
+            baby.weight = float(baby_weight)
+        if baby_height:
+            baby.height = float(baby_height)
+        try:
+            if baby_birthday:
+                baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
+        except Exception as e:
+            print(e)
+            return HttpResponse('BIRTHDAY_FORMAT_ERR')
+        print('user update, update baby info %s, birthday: %s' % (baby.name, baby_birthday))
+        if baby_sex:
+            baby.sex = baby_sex
+        if baby_name:
+            baby.name = baby_name
+        try:
+            if(baby_homeaddr):
+                baiduresp = get_baidu_location(baby_homeaddr)
+                if baiduresp['result']['location']['lng'] and baiduresp['result']['location']['lat']:
+                    lng = baiduresp['result']['location']['lng']
+                    lat = baiduresp['result']['location']['lat']
+                    baby.homepoint = fromstr("POINT(%s %s)" % (lng, lat))
+                    baby.city = get_baidu_city(lat, lng)
+                    baby.homeaddr = baby_homeaddr
+                    print("##delete old circle")
+                    if remove_circle(user, 1) != 'OK':
+                        return HttpResponse('UPDATE_CIRCLE_ERR')
+                    print("##re-create circle")
+                    if create_circle(user, 1, baby.homepoint) != 'OK':
+                        return HttpResponse('CREATE_CIRCLE_ERR')
+                else:
+                    return HttpResponse('HOMEADDR_FORMAT_ERR')
+        except Exception as e:
+            print(e)
+            return HttpResponse('HOMEADDR_FORMAT_EXCEPTION')
+        if baby_schooladdr:
+            baby.schooladdr = baby_schooladdr
+        baby.save()
         response = 'False'
-    else:
-        response = 'True'
-    return HttpResponse(response)
+        if baby is None:
+            return HttpResponse('EXCEPTION')
+        else:
+            return HttpResponse('OK')
+    except Exception as e:
+        print(e)
+        return HttpResponse('EXCEPTION')
 
 def data_encode(*data_array):
     rets =''
@@ -221,16 +252,11 @@ def informationcheck(request):
 @csrf_exempt
 def getinfo(request):
     try:
+        if request.method == "POST":
+            return HttpResponse('HTTP_METHOD_ERR')
         (authed, username, password, user) = auth_user(request)
         if not user:
              return HttpResponse('AUTH_FAILED')
-        #user = request.user
-        #print('req in getinfo:')
-        #print(request)
-        #print('---user in getinfo:')
-        #print(user)
-        #if not user.is_authenticated():
-        #    return HttpResponse('AUTH_FAILED')
         else:
             baby = user.baby
             resp = {}
@@ -248,6 +274,43 @@ def getinfo(request):
     except Exception as e:
         print(e)
         return HttpResponse(e)
+
+
+@csrf_exempt
+def upload_head(request):
+    try :
+        if request.method == 'GET':
+            return HttpResponse('HTTP_METHOD_ERR')
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse('AUTH_FAILED')
+        head_data = request.FILES['head']
+        head = Head()
+        head.username = user.username
+        head.head_orig = head_data
+        head.save()
+        full_url = ''.join(['http://', request.META['HTTP_HOST'], head.head_thumbnail.url])
+        print(full_url)
+        return HttpResponse(full_url)
+    except Exception as e:
+        print('Exception:' + str(e))
+        return HttpResponse('UPLOAD_ERR')
+    
+    
+def get_head(request):
+    try :
+        if request.method == 'POST':
+            return HttpResponse('HTTP_METHOD_ERR')
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse('AUTH_FAILED')
+        full_url = getheadurl(user)
+        print(full_url)
+        return HttpResponse(full_url)
+    except Exception as e:
+        print('Exception:' + str(e))
+        return HttpResponse('GET_HEAD_ERR')
+
 
 def gethomepic(request):
     try:

@@ -52,20 +52,18 @@ INSTALLED_APPS = (
     "django_cron",
     'users',
     'apphome',
-    #'south',
-    #'merchant',
-    #'registration',
     'weixin',
-    #'surrounding',
     'baby',
-    'shop',
+    'merchant',
     'knowledge',
-    'consumption',
-    'mobile',
+    'commercial',
     'weather',
     'quan',
+    'jiaquan',
+    'tlquan',
     'imagekit',
     'photos',
+    'registration',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -123,7 +121,7 @@ SITE_ID = 1
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-#LOGIN_URL = '/merchant/login/'
+#LOGIN_URL = '/appmerchant/login/'
 
 STATIC_URL = '/static/'
 
@@ -149,7 +147,7 @@ DOMAIN = 'http://wjbb.cloudapp.net:80'
 
 #for django-cron job. mark the circle as deleted if the user not access this circle for a long time.
 CRON_CLASSES = [
-    "quan.cron.DelCronJob",
+    "jiaquan.cron.DelCronJob",
     #"django_cron.cron.FailedRunsNotificationCronJob",  need send_email to notify the admin cron job failed.
     # ...
 ]

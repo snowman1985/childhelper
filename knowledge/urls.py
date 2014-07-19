@@ -8,7 +8,9 @@ from django.conf.urls import patterns, url
 from knowledge import views
 
 urlpatterns = patterns('',
-    url(r'^collectknowl/',views.collectknowl, name='collectknowl'),
-    url(r'^webview/([0-9]*)/$', views.web_view),
     url(r'^add/$', views.KnowledgeFormView.as_view(success_url='/knowledge/add/')),
+    url(r'^collect/',views.collectknowl, name='collectknowl'),
+    url(r'^listcollect/',views.list_collection, name='list_collection'),
+    url(r'^webview/$', views.web_view),
+    url(r'^list/', views.list_knowledge, name='knowledge list view'),
 )
