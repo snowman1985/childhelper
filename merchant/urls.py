@@ -19,7 +19,6 @@ urlpatterns = patterns('',
     url(r'^commercials/promotioneffect/(?P<commercial_id>\d+)/', PromotionView.as_view(), name='promotion_effect'),
     url(r'^commercials/', CommercialListView.as_view(), name='commercials'),
     url(r'^about$', about, name='about'),
-    
     #app urls
     url(r'^webview/([0-9]*)/$', web_view),
 )

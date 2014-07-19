@@ -26,7 +26,7 @@ class BloomFilter:
 bf = BloomFilter(500000, 7)
 
 #lines = open("./mgc.txt").read().splitlines()
-#lines = open("/home/test/xueyu/newvers/ywbweb/appmerchant/mgc1.txt").read().splitlines()
+#lines = open("/home/test/xueyu/newvers/ywbweb/merchant/mgc1.txt").read().splitlines()
 lines = open("/root/xueyu/sensitive/ywbweb/sfilter/mgc1.txt").read().splitlines()
 
 for line in lines:

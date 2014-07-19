@@ -137,6 +137,6 @@ def getcommerciallist(baby, number):
         response = commercial_list_encode(commercial_nearby)
     for commercial in commercial_nearby:
         print("##commercialid:", commercial.id, "##merchantid:", commercial.merchant.id, "##babyid:", baby.id)
-        #store_commercial_history(commercial.id, commercial.appmerchant.id, baby.id) 
+        store_commercial_history(commercial.id, commercial.merchant.id, baby.id)
     return response
     

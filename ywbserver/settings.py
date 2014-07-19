@@ -52,7 +52,7 @@ INSTALLED_APPS = (
     "django_cron",
     'users',
     'apphome',
-    'weixin',
+    #'weixin',
     'baby',
     'merchant',
     'knowledge',
@@ -121,7 +121,7 @@ SITE_ID = 1
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-#LOGIN_URL = '/appmerchant/login/'
+#LOGIN_URL = '/merchant/login/'
 
 STATIC_URL = '/static/'
 

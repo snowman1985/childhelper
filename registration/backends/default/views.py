@@ -13,7 +13,7 @@ from merchant.models import *
 from django.shortcuts import redirect
 
 class RegistrationView(BaseRegistrationView):
-    template_name = 'appmerchant/register.html'
+    template_name = 'merchant/register.html'
     form_class = RegisterForm
     def get_context_data(self, **kwargs):
         context = super(RegistrationView, self).get_context_data(**kwargs)

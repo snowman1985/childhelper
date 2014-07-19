@@ -96,7 +96,7 @@ def weixin_shop_reply(latitude, longitude, number, msg):
     picindexes = random.sample((0,1,2,3,4,5,6,7,8,9), number)
     for i in range(0, number):
         shops[i].picurl = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindexes[i])+'.jpg'
-        shops[i].url = 'http://wjbb.cloudapp.net/appmerchant/getshop/%d/'%(shops[i].id)
+        shops[i].url = 'http://wjbb.cloudapp.net/merchant/getshop/%d/'%(shops[i].id)
     context = {}
     context['shops'] = shops
     context['fromUser'] = msg['ToUserName']
