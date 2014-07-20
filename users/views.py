@@ -22,6 +22,7 @@ from utils.baidumap import *
 from baby.models import Baby
 from jiaquan.models import *
 from photos.models import *
+from utils.serialization import *
 
 log=logging.getLogger('customapp')
 
@@ -36,7 +37,7 @@ def check_user_name(username):
 def user_login(request):
     try:
         if request.method == "GET":
-            return HttpResponse('HTTP_METHOD_ERR')
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         username = request.POST.get('username')
         password = request.POST.get('password')
         print("user login username base64 is :" + username)
@@ -47,32 +48,32 @@ def user_login(request):
         user = authenticate(username=username, password=password)
         if user is not None:  
             login(request, user)
-            return HttpResponse('OK')
+            return HttpResponse(json_serialize(status = 'OK'))
         else:  
-            return HttpResponse('AUTH_FAILED')
+            return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
     except Exception as e:
         log.error(e)
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION'))
   
 @csrf_exempt
 def user_logout(request):
     try:
-        if request.method == "GET":
-            return HttpResponse('HTTP_METHOD_ERR')
+        if request.method != "POST":
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         (authed, username, password, user) = auth_user(request)
         if not user or not authed:
-             return HttpResponse('AUTH_FAILED')
+             return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
         logout(request)
-        return HttpResponse('OK')
+        return HttpResponse(json_serialize(status = 'OK'))
     except Exception as e:
         log.error(e)
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION'))
 
 @csrf_exempt
 def register(request):
     try:
-        if request.method == "GET":
-            return HttpResponse('HTTP_METHOD_ERR')
+        if request.method != "POST":
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         username = request.POST.get('username')
         password = request.POST.get('password')
         username = http.urlsafe_base64_decode(username)
@@ -80,7 +81,7 @@ def register(request):
         username = username.decode()
         password = password.decode()
         if check_user_name(username) == "exist":
-            return HttpResponse("DUMPLICATE_NAME")
+            return HttpResponse(json_serialize(status = 'DUMPLICATE_NAME'))
         log.debug('user register %s  %s ' , username, password)
         baby = Baby()
         baby_name = request.POST.get('babyname')
@@ -97,7 +98,7 @@ def register(request):
             baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
         except Exception as e:
             log.error(e)
-            return HttpResponse('BIRTHDAY_FORMAT_ERR')
+            return HttpResponse(json_serialize(status = 'BIRTHDAY_FORMAT_ERR'))
         baby.sex = baby_sex
         baby.type = 1   ###这个注册用户来自app
         #get latitude and longitude from baidumap.and save as a geo point.
@@ -125,7 +126,7 @@ def register(request):
             baby.city = None
             baby.homeaddr = None
             log.error(e)
-            return HttpResponse('HOMEADDR_FORMAT_ERR')
+            return HttpResponse(json_serialize(status = 'HOMEADDR_FORMAT_ERR'))
         ##try to save the school address
         try:
             if(baby_schooladdr):
@@ -146,7 +147,7 @@ def register(request):
             baby.schooladdr = None
             baby.schooladdr = None
             log.error(e)
-            return HttpResponse('SCHOOLADDR_FORMAT_ERR')
+            return HttpResponse(json_serialize(status = 'SCHOOLADDR_FORMAT_ERR'))
         log.info('user register, add a new baby %s, birthday: %s' % (baby.name, baby.birthday.strftime("%Y-%m-%d")))
     # 产生一个新用户:
         user = User.objects.create_user(username = username, password = password)
@@ -154,23 +155,23 @@ def register(request):
         user.save()
         baby.save()
         if baby is None:
-            return HttpResponse("EXCEPTION")
+            return HttpResponse(json_serialize(status = 'EXCEPTION'))
         else:
             if need_circle:
                 print("##create circle for user " + user.username)
                 create_circle(user, 1, baby.homepoint)
-            return HttpResponse("OK")
+            return HttpResponse(json_serialize(status = 'OK'))
     except Exception as e:
-        return HttpResponse("EXCEPTION")
+        return HttpResponse(json_serialize(status = 'EXCEPTION'))
 
 @csrf_exempt
 def update(request):
     try:
-        if request.method == "GET":
-            return HttpResponse('HTTP_METHOD_ERR')
+        if request.method != "POST":
+            return HttpResponse(json_serialize(status = "HTTP_METHOD_ERR", result = {}))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
-            return HttpResponse('AUTH_FAILED')
+            return HttpResponse(json_serialize(status = "AUTH_FAILED", result = {}))
         baby_height = request.POST.get('babyheight')
         baby_weight = request.POST.get('babyweight')
         baby_birthday = request.POST.get('birthday')
@@ -191,7 +192,7 @@ def update(request):
                 baby.birthday = datetime.datetime.fromtimestamp(time.mktime(time.strptime(baby_birthday,"%Y-%m-%d")))
         except Exception as e:
             print(e)
-            return HttpResponse('BIRTHDAY_FORMAT_ERR')
+            return HttpResponse(json_serialize(status = "BIRTHDAY_FORMAT_ERR", result = e))
         print('user update, update baby info %s, birthday: %s' % (baby.name, baby_birthday))
         if baby_sex:
             baby.sex = baby_sex
@@ -208,32 +209,27 @@ def update(request):
                     baby.homeaddr = baby_homeaddr
                     print("##delete old circle")
                     if remove_circle(user, 1) != 'OK':
-                        return HttpResponse('UPDATE_CIRCLE_ERR')
+                        return HttpResponse(json_serialize(status = "UPDATE_CIRCLE_ERR", result = {}))
                     print("##re-create circle")
                     if create_circle(user, 1, baby.homepoint) != 'OK':
-                        return HttpResponse('CREATE_CIRCLE_ERR')
+                        return HttpResponse(json_serialize(status = "CREATE_CIRCLE_ERR", result = {}))
                 else:
-                    return HttpResponse('HOMEADDR_FORMAT_ERR')
+                    return HttpResponse(json_serialize(status = "HOMEADDR_FORMAT_ERR", result = {}))
         except Exception as e:
             print(e)
-            return HttpResponse('HOMEADDR_FORMAT_EXCEPTION')
+            return HttpResponse(json_serialize(status = "HOMEADDR_FORMAT_EXCEPTION", result = {}))
         if baby_schooladdr:
             baby.schooladdr = baby_schooladdr
         baby.save()
         response = 'False'
         if baby is None:
-            return HttpResponse('EXCEPTION')
+            return HttpResponse(json_serialize(status = "EXCEPTION", result = {}))
         else:
-            return HttpResponse('OK')
+            return HttpResponse(json_serialize(status = "OK", result = {}))
     except Exception as e:
         print(e)
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = "HTTP_METHOD_ERR", result = e))
 
-def data_encode(*data_array):
-    rets =''
-    for (data) in data_array:
-      rets = ('%s%s') % (rets, data)
-    return json.dumps(rets, ensure_ascii=False)
 
 @csrf_exempt
 def informationcheck(request):
@@ -252,11 +248,11 @@ def informationcheck(request):
 @csrf_exempt
 def getinfo(request):
     try:
-        if request.method == "POST":
-            return HttpResponse('HTTP_METHOD_ERR')
+        if request.method != "GET":
+            return HttpResponse(json_serialize(status = "HTTP_METHOD_ERR", result = {}))
         (authed, username, password, user) = auth_user(request)
         if not user:
-             return HttpResponse('AUTH_FAILED')
+             return HttpResponse(json_serialize(status = "AUTH_FAILED", result = {}))
         else:
             baby = user.baby
             resp = {}
@@ -270,20 +266,20 @@ def getinfo(request):
             resp['city'] = baby.city
             resp['homeaddr'] = baby.homeaddr
             resp['schooladdr'] = baby.schooladdr
-            return HttpResponse(json.dumps(resp, ensure_ascii=False))
+            return HttpResponse(json_serialize(status = "OK", result = resp))
     except Exception as e:
         print(e)
-        return HttpResponse(e)
+        return HttpResponse(json_serialize(status = "EXCEPTION", result = e))
 
 
 @csrf_exempt
 def upload_head(request):
     try :
-        if request.method == 'GET':
-            return HttpResponse('HTTP_METHOD_ERR')
+        if request.method != 'POST':
+            return HttpResponse(json_serialize(status = "HTTP_METHOD_ERR", result = {}))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
-            return HttpResponse('AUTH_FAILED')
+            return HttpResponse(json_serialize(status = "AUTH_FAILED", result = {}))
         head_data = request.FILES['head']
         head = Head()
         head.username = user.username
@@ -291,25 +287,25 @@ def upload_head(request):
         head.save()
         full_url = ''.join(['http://', request.META['HTTP_HOST'], head.head_thumbnail.url])
         print(full_url)
-        return HttpResponse(full_url)
+        return HttpResponse(json_serialize(status = "OK", result = full_url))
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('UPLOAD_ERR')
+        return HttpResponse(json_serialize(status = "EXCEPTION", result = e))
     
     
 def get_head(request):
     try :
-        if request.method == 'POST':
-            return HttpResponse('HTTP_METHOD_ERR')
+        if request.method != 'GET':
+            return HttpResponse(json_serialize(status = "HTTP_METHOD_ERR", result = {}))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
-            return HttpResponse('AUTH_FAILED')
+            return HttpResponse(json_serialize(status = "AUTH_FAILED", result = {}))
         full_url = getheadurl(user)
         print(full_url)
-        return HttpResponse(full_url)
+        return HttpResponse(json_serialize(status = "OK", result = full_url))
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('GET_HEAD_ERR')
+        return HttpResponse(json_serialize(status = "EXCEPTION", result = e))
 
 
 def gethomepic(request):

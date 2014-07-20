@@ -131,9 +131,10 @@ def testgethead():
     
 #print(testuploadhead())
 #print(testgethead()) 
-#print(testgetinfo())
+print(testgetinfo())
 #print(testupdate())
 #print(testregister())
-print(testupdate())
+#print(testupdate())
 #print(testinformationcheck())
 #print(testregister())
+
