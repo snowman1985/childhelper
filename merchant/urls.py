@@ -12,6 +12,9 @@ urlpatterns = patterns('',
     url(r'^logout/', logout_view),
     url(r'^$', MerchantMainPageView.as_view(), name='merchant_mainpage'),
     url(r'^register/', RegisterView.as_view(success_url='/merchant/'), name='register'),
+    url(r'^password_change/$', 'django.contrib.auth.views.password_change', {'template_name':'merchant/password_change.html'},name='password_change'),
+    #url(r'^password_change/done/$', 'django.contrib.auth.views.password_change_done', name='password_change_done'),
+    url(r'^password_change/done/$', MerchantHomeView.as_view(), name='password_change_done'),
     url(r'^home/', MerchantHomeView.as_view(), name='merchant_home'),
     #url(r'^commercials/promotioneffect/(\d+)/', PromotionView.as_view(), name='promotion_effect'),
     url(r'^commercials/post/', CommercialPostView.as_view(success_url='/merchant/commercials/list/'), name='commercials_post'),
@@ -19,7 +22,6 @@ urlpatterns = patterns('',
     url(r'^commercials/promotioneffect/(?P<commercial_id>\d+)/', PromotionView.as_view(), name='promotion_effect'),
     url(r'^commercials/', CommercialListView.as_view(), name='commercials'),
     url(r'^about$', about, name='about'),
-    #app urls
-    url(r'^webview/([0-9]*)/$', web_view),
+    url(r'^findhelp/', FindHelpView.as_view(), name='findhelp'),
 )
 

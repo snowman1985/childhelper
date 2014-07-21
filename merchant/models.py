@@ -23,6 +23,11 @@ class CommercialHistory(models.Model):
     merchant_id = models.IntegerField()
     baby_id = models.IntegerField()
 
+class HelpFinder(models.Model):
+    appuser_id = models.IntegerField()
+    pub_time = models.DateTimeField()
+    content = models.CharField(max_length=2000)
+
 def get_merchant_nearby(latitude, longitude, number=1, distance = 50000):
     point = fromstr("POINT(%s %s)" % (longitude, latitude))
     nearby = Merchant.objects.using('ywbwebdb').filter(point__distance_lt=(point, D(km=int(distance)/1000)))
