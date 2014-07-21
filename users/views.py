@@ -278,9 +278,10 @@ def upload_head(request):
         if request.method != 'POST':
             return HttpResponse(json_serialize(status = "HTTP_METHOD_ERR", result = {}))
         (authed, username, password, user) = auth_user(request)
+        print(user)
         if not authed or not user:
             return HttpResponse(json_serialize(status = "AUTH_FAILED", result = {}))
-        head_data = request.FILES['head']
+        head_data = request.FILES['portrait']
         head = Head()
         head.username = user.username
         head.head_orig = head_data
