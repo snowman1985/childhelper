@@ -274,6 +274,8 @@ def getinfo(request):
 
 @csrf_exempt
 def upload_head(request):
+    print("upload head request:")
+    print(request)
     try :
         if request.method != 'POST':
             return HttpResponse(json_serialize(status = "HTTP_METHOD_ERR", result = {}))
