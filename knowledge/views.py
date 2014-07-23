@@ -115,9 +115,9 @@ def list_knowledge(request):
     try:
         if request.method != 'GET':
             return HttpResponse('HTTP_METHOD_ERR')
-        knumber = int(request.GET.get('number'))
-        if knumber == None:
-            return HttpResponse('PARAMETER_NULL_number')
+        knumber = 5
+        if request.GET.get('number'):
+            knumber = int(request.GET.get('number'))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
             knowls = getknowllist_anonymous(request, knumber)
