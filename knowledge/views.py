@@ -74,15 +74,15 @@ class KnowledgeFormView(CreateView):
 def knowledge_list_encode(knowls):
     rets = []
     number = len(list(knowls))
-    picindexes = random.sample((0,1,2,3,4,5,6,7,8,9), number)
+    #picindexes = random.sample((0,1,2,3,4,5,6,7,8,9), number)
     for i in range(0, number):
         knowl = knowls[i]
         t = {}
         tags = knowl.keyword.split(';')
         t['id'] = knowl.id
         t['title'] = knowl.title
-        t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(picindexes[i])+'.jpg'
-        t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(picindexes[i])+'.png'
+        t['pic'] = 'http://www.yangwabao.com:8001/pic/'+str(random.randint(0,9))+'.jpg'
+        t['icon'] = 'http://www.yangwabao.com:8001/icon/'+str(random.randint(0,9))+'.png'
         if knowl.abstract:
             t['Abstract'] = knowl.abstract
         else:
