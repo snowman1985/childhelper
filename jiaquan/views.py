@@ -20,6 +20,7 @@ from jiaquan import *
 from datetime import *
 from jiaquan import *
 from users.utils import *
+from utils.serialization import *
 from .models import *
 import json, base64, traceback, random
 import datetime,time
@@ -217,7 +218,8 @@ def post_topic(request):
         topic = JiaTopic(from_user = user,
                      content =  content,
                      create_time = timenow,
-                     update_time = timenow)
+                     update_time = timenow,
+                     point = user.baby.homepoint)
         ret = topic.save()
         if  request.FILES and ('photo' in request.FILES.keys()) and request.FILES['photo'] != None:
             photo_data = request.FILES['photo']
@@ -262,7 +264,41 @@ def list_topic(request):
         return HttpResponse("EXCEPTION")
 
 
-
+##获取帖子列表
+def list_topic_nearby(request):
+    try:
+        if request.method != 'GET':
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
+        #获取page参数
+        if not request.GET.get('page'):
+            page = 1
+        else:
+            page = int(request.GET.get('page'))
+        #获取number参数
+        if not request.GET.get('number'):
+            number = 5
+        else:
+            number = int(request.GET.get('number'))
+        if not request.GET.get('longitude'):
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        else:
+            longitude = request.GET.get('longitude')
+        if not request.GET.get('latitude'):
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        else:
+            latitude = request.GET.get('latitude')
+        print(request.GET)
+        paginator = get_nearby_topic(longitude = longitude, latitude = latitude, page_size = number)
+        try:
+            return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(page))))
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(paginator.num_pages))))
+    except Exception as e:
+        return HttpResponse(json_serialize(status = 'EXCEPTION'))
 
 
 
