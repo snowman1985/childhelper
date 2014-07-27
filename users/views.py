@@ -303,12 +303,28 @@ def get_head(request):
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
             return HttpResponse(json_serialize(status = "AUTH_FAILED", result = {}))
-        full_url = getheadurl(user)
+        type = 'thumbnail'
+        if request.GET.get('type'):
+            type = request.GET.get('type')
+        if type == 'thumbnail':
+            full_url = getheadurl(user = user, type = 'thumbnail')
+        elif type == 'orig':
+            full_url = getheadurl(user = user, type = 'orig')
+#         elif type == 'custom':
+#             if not request.GET.get('width') or not request.GET.get('height'):
+#                 return HttpResponse(json_serialize(status = "INVALID_PARAM", result = {}))
+#             else:
+#                 width = int(request.GET.get('width'))
+#                 height = int(request.GET.get('height'))
+#                 full_url = getheadurl(user = user, type = 'custom', width = width, height = height)
+#                 return HttpResponse(json_serialize(status = "OK", result = full_url))
+        else:
+            return HttpResponse(json_serialize(status = "INVALID_PARAM", result = {}))
         print(full_url)
         return HttpResponse(json_serialize(status = "OK", result = full_url))
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse(json_serialize(status = "EXCEPTION", result = e))
+        return HttpResponse(json_serialize(status = "EXCEPTION", result = str(e)))
 
 
 def gethomepic(request):
