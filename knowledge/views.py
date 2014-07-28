@@ -174,7 +174,10 @@ def list_collection(request):
             return HttpResponse(json_serialize(status = 'PARAM_NULL'))
         page = int(request.GET.get('page'))
         number = int(request.GET.get('number'))
-        collection = user.knowledgecollection
+        try:
+            collection = user.knowledgecollection
+        except KnowledgeCollection.DoesNotExist:
+            return HttpResponse(json_serialize(status = 'OK', result = {}))
         if not collection:
             return HttpResponse(json_serialize(status = 'OK', result = {}))
         knowlids = collection.collections
@@ -186,5 +189,5 @@ def list_collection(request):
             # If page is out of range (e.g. 9999), deliver last page of results.
             return HttpResponse(json_serialize(status = 'OK', result = knowledge_list_encode(paginator.page(paginator.num_pages))))
     except Exception as e:
-        print('Exception:' + str(e))
+        print('Exception:' + str(type(e)) + str(e))
         return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))

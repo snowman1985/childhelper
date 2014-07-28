@@ -60,8 +60,8 @@ def testgetknowledges():
     return r.text
 
 #print(testgetdata())
-print(testgetknowledges())
+#print(testgetknowledges())
 #print(testcollect())
-#print(testgetcollect())
+print(testgetcollect())
 
 
