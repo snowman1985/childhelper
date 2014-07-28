@@ -1,21 +1,22 @@
 from django.shortcuts import render
 from django.http import *
-from baby.models import Baby
-from knowledge.models import *
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.utils import http
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import FormView, TemplateView, CreateView
-from datetime import *
-from users.utils import *
-import base64, json, random, math
-
+from django.core.paginator import Paginator, EmptyPage
 from django.template.loader import get_template
 from django.template import Context
 from .forms import *
 from ywbserver.settings import *
+from utils.serialization import *
+from baby.models import Baby
+from knowledge.models import *
+from datetime import *
+from users.utils import *
+import base64, json, random, math
 # Create your views here.
 
 def web_view(request):
@@ -114,71 +115,76 @@ def getknowllist_anonymous(request, number):
 def list_knowledge(request):
     try:
         if request.method != 'GET':
-            return HttpResponse('HTTP_METHOD_ERR')
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         knumber = 5
         if request.GET.get('number'):
             knumber = int(request.GET.get('number'))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
             knowls = getknowllist_anonymous(request, knumber)
-            return HttpResponse(json.dumps(knowls, ensure_ascii=False))
+            return HttpResponse(json_serialize(status = 'OK', result = knowls))
         else:
             baby = Baby.objects.get(user=user)
             knowls = getknowllist(baby, knumber)
-            return HttpResponse(json.dumps(knowls, ensure_ascii=False))
+            return HttpResponse(json_serialize(status = 'OK', result = knowls))
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))
 
 
 @csrf_exempt
 def collectknowl(request):
     try:
-        if request.method == 'GET':
-                return HttpResponse('HTTP_METHOD_ERR')
+        if request.method != 'POST':
+                return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
-            return HttpResponse('AUTH_FAILED')
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        if not request.POST.get('id'):
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
         knowlid = request.POST.get('id')
-        if knowlid == None or knowlid =="":
-            return HttpResponse('NULL_ID')
-        else:
-            knowlid = int(knowlid)
+        knowlid = int(knowlid)
         try:
             collection_record = KnowledgeCollection.objects.get(user = user)
         except KnowledgeCollection.DoesNotExist:
             new_collection_record = KnowledgeCollection(user = user, collections = [])
             new_collection_record.collections.append(knowlid)
             new_collection_record.save()
-            return HttpResponse('OK')
+            return HttpResponse(json_serialize(status = 'OK'))
         else:
             if knowlid not in collection_record.collections:
                 collection_record.collections.append(knowlid)
                 collection_record.save()
-            return HttpResponse('OK')
+            return HttpResponse(json_serialize(status = 'OK'))
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))
 
 
 def list_collection(request):
     try:
         if request.method != 'GET':
-            return HttpResponse('HTTP_METHOD_ERR')
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
-            return HttpResponse('AUTH_FAILED')
-        knumber = request.GET.get('number')
-        if knumber == None:
-            knumber = 5
-        else:
-            knumber = int(knumber)
+            return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
+        if not request.GET.get('page'):
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        if not request.GET.get('number'):
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        page = int(request.GET.get('page'))
+        number = int(request.GET.get('number'))
         collection = user.knowledgecollection
         if not collection:
-            return HttpResponse(json.dumps({}, ensure_ascii=False))
+            return HttpResponse(json_serialize(status = 'OK', result = {}))
         knowlids = collection.collections
         knowls = get_knowls_byids(knowlids)
-        return HttpResponse(json.dumps(knowledge_list_encode(knowls), ensure_ascii=False))
+        paginator = Paginator(knowls, number)
+        try:
+            return HttpResponse(json_serialize(status = 'OK', result = knowledge_list_encode(paginator.page(page))))
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            return HttpResponse(json_serialize(status = 'OK', result = knowledge_list_encode(paginator.page(paginator.num_pages))))
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))

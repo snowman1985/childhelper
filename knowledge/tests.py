@@ -13,7 +13,7 @@ def testcollect():
     cookies = r.cookies
     url = 'http://localhost:8000/knowledge/collect/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
-    payload = {'username': username, 'password': password, 'id': 2}
+    payload = {'id': 2}
     r = requests.post(url, data=payload, headers = headers, cookies = cookies)
     fp = open("test.html",'w')
     fp.write(r.text)
@@ -30,7 +30,7 @@ def testgetcollect():
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)
     cookies = r.cookies
-    url = 'http://localhost:8000/knowledge/listcollect/'
+    url = 'http://localhost:8000/knowledge/listcollect/?number=5&page=1'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {}
     r = requests.get(url, data=payload, headers = headers, cookies = cookies)
@@ -40,8 +40,8 @@ def testgetcollect():
     return r.text
 
 def testgetknowledges():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'sg1'
+    password = 'sg1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     loginurl = 'http://localhost:8000/user/login/'
@@ -49,10 +49,11 @@ def testgetknowledges():
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)
     cookies = r.cookies
-    url = 'http://localhost:8000/knowledge/list/?number=5&age=2'
+    url = 'http://localhost:8000/knowledge/list/?number=15'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
-    payload = {'number': 5}
-    r = requests.get(url, data=payload, headers = headers, cookies = cookies)
+    payload = {'number': 15}
+    #r = requests.get(url, data=payload, headers = headers, cookies = cookies)
+    r = requests.get(url, headers = headers)
     fp = open("test.html",'w')
     fp.write(r.text)
     fp.close()
