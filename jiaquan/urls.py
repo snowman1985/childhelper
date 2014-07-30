@@ -15,4 +15,5 @@ urlpatterns = patterns('',
     url(r'^addcommentwebview/(\d+)/(\d+)/$', addcommentwebview, name='addcommentwebview'),
     url(r'^posttopic/', post_topic, name='post_topic'),
     url(r'^listtopic/', list_topic, name='list_topic'),
+    url(r'^listtopicnearby/', list_topic_nearby, name='list_topic_nearby'),
 )

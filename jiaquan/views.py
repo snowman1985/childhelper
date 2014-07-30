@@ -20,6 +20,7 @@ from jiaquan import *
 from datetime import *
 from jiaquan import *
 from users.utils import *
+from utils.serialization import *
 from .models import *
 import json, base64, traceback, random
 import datetime,time
@@ -163,7 +164,8 @@ def circletopiclist_encode(topics):
         t['create_time'] = topic.create_time.strftime('%Y-%m-%d %H:%M:%S' )
         t['update_time'] = topic.update_time.strftime('%Y-%m-%d %H:%M:%S' )
         rets.append(t)
-    return json.dumps(rets, ensure_ascii=False)
+    #return json.dumps(rets, ensure_ascii=False)
+    return rets
 
 
 def circletopic_encode(topics):
@@ -187,11 +189,11 @@ def circletopic_encode(topics):
 def get_circletopic(request):
     (authed, username, password, user) = auth_user(request)
     if not authed or not user:
-        return HttpResponse('AUTH_FAILED')
+        return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
     timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     circle = user.circle
     if not circle:
-        return HttpResponse('CIRCLE_NOT_EXIST')
+        return HttpResponse(json_serialize(status = 'CIRCLE_NOT_EXIST'))
     circle.last_access = timenow # update the last-access time.
     circle.save()
     topicids = circle.topic_ids
@@ -199,49 +201,49 @@ def get_circletopic(request):
     for topicid in reversed(topicids):
         topic = JiaTopic.objects.get(id = topicid)
         circletopics.append(topic)
-    return HttpResponse(circletopic_encode(circletopics))
+    return HttpResponse(json_serialize(status = 'OK',result = circletopic_encode(circletopics)))
 
 
 @csrf_exempt   ###保证对此接口的访问不需要csrf
 def post_topic(request):
     try:
-        if request.method == 'GET':
-            return HttpResponse('HTTP_METHOD_ERR')
+        if request.method != 'POST':
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
-            return HttpResponse('AUTH_FAILED')
+            return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
         content = request.POST.get('content')
         if not content:
-            return HttpResponse('CONTENT_NULL')
+            return HttpResponse(json_serialize(status = 'CONTENT_NULL'))
         timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
         topic = JiaTopic(from_user = user,
                      content =  content,
                      create_time = timenow,
-                     update_time = timenow)
+                     update_time = timenow,
+                     point = user.baby.homepoint)
         ret = topic.save()
         if  request.FILES and ('photo' in request.FILES.keys()) and request.FILES['photo'] != None:
             photo_data = request.FILES['photo']
             photo = Photo(topic = topic, photo_orig = photo_data)
             ret = photo.save()
-            print(photo)
         topic_id = topic.id
         circle = user.circle
         circle.last_access = timenow # update the last-access time.
         circle.save()
         if topic_id and circle:
             circle.add_topic(topic)
-            return HttpResponse('OK')
+            return HttpResponse(json_serialize(status = 'OK'))
         else:
-            return HttpResponse('EXCEPTION')
+            return HttpResponse(json_serialize(status = 'EXCEPTION'), result = 'circle not found')
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))
 
 
 ##获取帖子列表
 def list_topic(request):
     try:
-        if request.method == 'POST':
+        if request.method == 'GET':
             return HttpResponse('HTTP_METHOD_ERR')
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
@@ -262,7 +264,41 @@ def list_topic(request):
         return HttpResponse("EXCEPTION")
 
 
-
+##获取帖子列表
+def list_topic_nearby(request):
+    try:
+        if request.method != 'GET':
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
+        #获取page参数
+        if not request.GET.get('page'):
+            page = 1
+        else:
+            page = int(request.GET.get('page'))
+        #获取number参数
+        if not request.GET.get('number'):
+            number = 5
+        else:
+            number = int(request.GET.get('number'))
+        if not request.GET.get('longitude'):
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        else:
+            longitude = request.GET.get('longitude')
+        if not request.GET.get('latitude'):
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        else:
+            latitude = request.GET.get('latitude')
+        print(request.GET)
+        paginator = get_nearby_topic(longitude = longitude, latitude = latitude, page_size = number)
+        try:
+            return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(page))))
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(paginator.num_pages))))
+    except Exception as e:
+        return HttpResponse(json_serialize(status = 'EXCEPTION'))
 
 
 

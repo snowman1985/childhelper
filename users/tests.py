@@ -19,8 +19,8 @@ from django.utils import http
 import requests
 
 def testregister():
-    username = 'shentest1'
-    password = 'shentest1'
+    username = 'sg6'
+    password = 'sg6'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     babyname = 'ruyi01'
@@ -28,7 +28,7 @@ def testregister():
     babyweight = 34
     birthday = '2013-05-05'
     babysex = 'girl'
-    homeaddr = '北京市海淀区紫金庄园'
+    homeaddr = '北京市用友软件园'
     schooladdr = '北京市万泉庄小学'
     url = 'http://localhost:8000/user/register/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
@@ -102,8 +102,8 @@ def testuploadhead():
     r = requests.post(loginurl, data=payload, headers = headers)
     cookies = r.cookies
     head = open('head.jpg', 'rb')
-    files = {'head' : head}
-    url = 'http://localhost:8000/photos/uploadhead/'
+    files = {'portrait' : head}
+    url = 'http://localhost:8000/user/posthead/'
     headers = {'content-Type': 'application/octet-stream'}
     payload = {'username': username, 'password': password}
     r = requests.post(url, data = payload, files = files, cookies = cookies)
@@ -122,7 +122,7 @@ def testgethead():
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)
     cookies = r.cookies
-    url = 'http://localhost:8000/user/gethead/'
+    url = 'http://localhost:8000/user/gethead/?type=thumbnail'
     r = requests.get(url,cookies = cookies)
     fp = open("test.html",'w')
     fp.write(r.text)
@@ -130,8 +130,8 @@ def testgethead():
     return r.text
     
 #print(testuploadhead())
-#print(testgethead()) 
-print(testgetinfo())
+print(testgethead()) 
+#print(testgetinfo())
 #print(testupdate())
 #print(testregister())
 #print(testupdate())

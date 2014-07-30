@@ -5,13 +5,8 @@ from django.views.generic.edit import FormView, ProcessFormView
 from django.contrib.auth.models import User 
 from django.contrib import auth
 from django import forms
-from django.core.urlresolvers import reverse
-from django.template.loader import get_template
-from django.template import Context
 from .forms import *
-from merchant.models import *
-from baby.models import *
-from commercial.models import *
+from .models import *
 from django.http import *
 from django.shortcuts import render_to_response
 from  django.template import RequestContext
@@ -20,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db import connections
 from django.contrib.gis.geos import Point, fromstr
+from baby.models import *
 # Create your views here.
 
 
@@ -35,12 +31,13 @@ def login_view(request):
                 auth.login(request, user)
             merchant = Merchant.objects.filter(user__username = username)[0]
             rcontext = RequestContext(request, locals())
-            return render_to_response(MerchantHomeView.template_name, rcontext)
+            #return render_to_response(MerchantHomeView.template_name, rcontext)
+            return HttpResponseRedirect("/merchant/home/")
         else:
             rcontext = RequestContext(request, locals())
             return render_to_response(MerchantMainPageView.template_name, rcontext)
     else:
-        return HttpResponseRedirect(reverse('merchant_mainpage'))
+        return HttpResponseRedirect("/merchant/")
 
 
 def logout_view(request):
@@ -48,7 +45,7 @@ def logout_view(request):
     if user is not None:
         auth.logout(request)
     # Redirect to a success page.
-    return HttpResponseRedirect(reverse('merchant_mainpage'))
+    return HttpResponseRedirect("/merchant/")
 
 
 class RegisterView(RegistrationView):
@@ -125,16 +122,15 @@ class MerchantHomeView(TemplateView):
         context['merchant'] = merchant = Merchant.objects.filter(user__username = self.request.user.username)[0]
         userpoints = []
         merp = fromstr("POINT(%s %s)" % (merchant.longitude, merchant.latitude))
-        nearbybabys = Baby.objects.using("ywbdb").filter(homepoint__distance_lt=(merp, D(km=int(5000)/1000)))
+        nearbybabys = Baby.objects.filter(homepoint__distance_lt=(merp, D(km=int(5000)/1000)))
         for baby in nearbybabys:
-            print("###baby x:",baby.homepoint.x,"###baby y:",baby.homepoint.y)
+            #print("###baby x:",baby.homepoint.x,"###baby y:",baby.homepoint.y)
             userpoints.append({'x':baby.homepoint.x, 'y':baby.homepoint.y})
 
         context['userpoints'] = userpoints
+        context['pushcount']=CommercialHistory.objects.filter(merchant_id=merchant.id).count()
         
         return context
-
-        
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -226,9 +222,9 @@ class PromotionView(TemplateView):
         context['merchant'] = merchant = Merchant.objects.filter(user__username = self.request.user.username)[0]
         userpoints = []
         merp = fromstr("POINT(%s %s)" % (merchant.longitude, merchant.latitude))
-        nearbybabys = Baby.objects.using("ywbdb").filter(homepoint__distance_lt=(merp, D(km=int(5000)/1000)))
+        nearbybabys = Baby.objects.filter(homepoint__distance_lt=(merp, D(km=int(5000)/1000)))
         seenhistory = CommercialHistory.objects.filter(commercial_id=commercialid)
-        seenbabys = [Baby.objects.using("ywbdb").get(id=history.baby_id) for history in seenhistory]
+        seenbabys = [Baby.objects.get(id=history.baby_id) for history in seenhistory]
         
         for baby in nearbybabys:
             print("###babyid:", baby.id)
@@ -240,24 +236,17 @@ class PromotionView(TemplateView):
             userpoints.append({'x':baby.homepoint.x, 'y':baby.homepoint.y, 'distance':babydistance, 'username':baby.user.username, 'haveseen':haveseen})
         context['userpoints'] = userpoints
         return context
-    
-    
-def web_view(request, oid):
-    try:
-        oid = int(oid)
-        o = Merchant.objects.using('ywbwebdb').get(id = oid)
-        t = get_template('merchant/appmerchant.html')
-        c = {}
-        c['shop_shopid'] = o.id
-        c['shop_title'] = o.name
-        c['shop_content'] = o.description
-        c['shop_address'] = o.address
-        c['shop_url'] = 'http://sj.yangwabao.com'
-        picindex = random.randint(0,9)
-        c['pic'] = 'http://wjbb.cloudapp.net:8001/pic/'+str(picindex)+'.jpg'
-        #c['comments'] = ShopComment.objects.filter(shopid=o)
-        c['comments'] = {}
-        html = t.render(Context(c))
-        return HttpResponse(html)
-    except ValueError:
-        raise Http404()
+
+class FindHelpView(TemplateView):
+    template_name = 'merchant/findhelp.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(FindHelpView, self).get_context_data(**kwargs)
+        context['merchant'] = merchant = Merchant.objects.filter(user__username = self.request.user.username)[0]
+        print("##findhelp:",merchant)
+        context['findhelpers'] = HelpFinder.objects.all()
+        return context
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FindHelpView, self).dispatch(*args, **kwargs)

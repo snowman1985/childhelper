@@ -3,11 +3,12 @@ from django.contrib.auth.models import User
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D
-import dbarray
-import datetime
 from django.utils.timezone import utc
+from django.core.paginator import Paginator, EmptyPage
 from quan.models import *
 from photos.models import *
+import dbarray
+import datetime
 # Create your models here.
 
 class Circle(models.Model):
@@ -70,7 +71,8 @@ def remove_circle(user, source):
         
 
 class JiaTopic(TopicBase):
-    pass
+    point = gis_models.PointField()
+    objects = gis_models.GeoManager()
 
 class JiaComment(CommentBase):
     topic = models.ForeignKey(JiaTopic)
@@ -78,4 +80,8 @@ class JiaComment(CommentBase):
 class Photo(PhotoBase):
     topic = models.ForeignKey(JiaTopic)
 
-    
+def get_nearby_topic(longitude, latitude, page_size = 5):
+    point = fromstr("POINT(%s %s)" % (longitude, latitude))
+    topics = JiaTopic.objects.distance(point).order_by('distance')
+    paginator = Paginator(topics, page_size)
+    return paginator
