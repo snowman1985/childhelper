@@ -55,11 +55,15 @@ class LoginForm(forms.Form):
 class PostCommercialForm(forms.ModelForm):
     class Meta:
         model = Commercial
-        fields = ('title', 'valid_date', 'content', 'photo')
+        fields = ('title', 'valid_date_from', 'valid_date_end', 'content', 'photo')
         widgets = {
             'title':forms.TextInput(attrs={'placeholder':'请输入您的标题' , ' class':'form-control','required':'required','autofocus':'autofocus'}),
             'content':forms.Textarea(attrs={'placeholder':'请输入您要发布的具体信息' , ' class':'form-control','required':'required'}), 
-            'valid_date':forms.TextInput(attrs={'placeholder':datetime.date.today().strftime("%m/%d/%Y"), 'class':'form-control', 'id':'validdatepicker'}) 
+            'valid_date_from':forms.TextInput(attrs={'placeholder':datetime.date.today().strftime("%m/%d/%Y"), 'class':'form-control', 'id':'validdatepicker_from', 'style':'width:40%; display:inline'}), 
+            #'valid_date_from':forms.TextInput(attrs={'placeholder':datetime.date.today().strftime("%m/%d/%Y"), 'id':'validdatepicker_from', 'style':'height:34px;padding:6px 12px;font-size:14px;line-height:1.42857143;color:#555}), 
+            #'valid_date_end':forms.TextInput(attrs={'class':'form-control', 'id':'validdatepicker_end'}) 
+            'valid_date_end':forms.TextInput(attrs={'id':'validdatepicker_end', 'class':'form-control', 'style':'width:40%; display:inline'}) 
+
             #'valid_date':forms.TextInput(attrs={'placeholder':datetime.date.today().strftime("%m/%d/%Y"), 'id':'validdatepicker'}) 
             }
     

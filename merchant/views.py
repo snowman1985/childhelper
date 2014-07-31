@@ -175,6 +175,7 @@ class CommercialPostView(FormView):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
         ###process register form
+        print("##form valid")
         if self.request.method == 'POST':
             form_post = PostCommercialForm(self.request.POST, self.request.FILES)
             if form_post.is_valid():
@@ -187,6 +188,10 @@ class CommercialPostView(FormView):
                 print(form_post.errors)
                 print("form_post not valid")
         return super(CommercialPostView, self).form_valid(form)
+
+    def form_invalid(self, form):
+        print("###form notvalid")
+        return super(CommercialPostView, self).form_invalid(form)
 
 def about(request):
     return render(request, "merchant/about.html")

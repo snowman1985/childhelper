@@ -32,7 +32,9 @@ select {
           <div class="form-group">
             <label class="control-label col-sm-2" for="input_addr">有效时间：</label>
             <div class="col-sm-10">
-              {{post_form.valid_date}}
+              {{post_form.valid_date_from}} 
+              <span>&#160; 至 &#160; </span>
+              {{post_form.valid_date_end}}
               <p class="help-block">请输入您发布信息的有效日期</p>
               {% if post_form.valid_date.errors %}
                 {{ post_form.valid_date.errors }}
@@ -84,7 +86,8 @@ select {
 <script>
 $(function() {
 //$("#validdatepicker").datepicker({changeYear:true});
-$("#validdatepicker").datepicker({changeYear:true});
+$("#validdatepicker_from").datepicker({changeYear:true});
+$("#validdatepicker_end").datepicker({changeYear:true});
 });
 </script>
 {%endblock%}
