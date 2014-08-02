@@ -1,12 +1,21 @@
 {% extends "merchant/merchant_home.html" %}
 
 {% block home_content %}
-<div class="list-group">
-<p class="text-info list-group-item-heading" style="font-size:30px; font-weight:bold">已发布请求</p>
+<div class="container">
+  <div class="row row-offcanvas-right">
+    <div class="col-md-8">
+    <div class="list-group">
+      <p class="text-info list-group-item-heading" style="font-size:30px; font-weight:bold">已发布需求</p>
 
-{% for help in findhelpers %}
-<p style="font-size:16px; font-weight:bold" class="list-group-item list-group-item-success col-sm-6">{{help.content}}</p>
-{% endfor %}
+      {% for help in findhelpers %}
+        <div class="list-group-item">
+          <p style="font-size:14px; font-style:italic" class="text-info">用户 {{help.user.username}} 发布需求 &#160; &#160; &#160; 发布时间: {{help.pub_time}}</p>
+          <p style="font-size:18px; font-weight:bold" class="list-group-item list-group-item-success">{{help.content}}</p>
+        </div>
+        <br/>
+      {% endfor %}
+    </div>
+    </div>
+  </div>
 </div>
-
 {% endblock %}

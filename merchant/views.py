@@ -249,7 +249,8 @@ class FindHelpView(TemplateView):
         context = super(FindHelpView, self).get_context_data(**kwargs)
         context['merchant'] = merchant = Merchant.objects.filter(user__username = self.request.user.username)[0]
         print("##findhelp:",merchant)
-        context['findhelpers'] = HelpFinder.objects.all()
+        #context['findhelpers'] = HelpFinder.objects.all()
+        context['findhelpers'] = UserDemand.objects.all()
         return context
 
     @method_decorator(login_required)

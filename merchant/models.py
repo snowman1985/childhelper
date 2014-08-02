@@ -28,6 +28,11 @@ class HelpFinder(models.Model):
     pub_time = models.DateTimeField()
     content = models.CharField(max_length=2000)
 
+class UserDemand(models.Model):
+    user = models.ForeignKey(User)
+    content = models.CharField(max_length=2000)
+    pub_time = models.DateTimeField()
+
 def get_merchant_nearby(latitude, longitude, number=1, distance = 50000):
     point = fromstr("POINT(%s %s)" % (longitude, latitude))
     nearby = Merchant.objects.using('ywbwebdb').filter(point__distance_lt=(point, D(km=int(distance)/1000)))
