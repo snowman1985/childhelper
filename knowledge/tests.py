@@ -13,7 +13,7 @@ def testcollect():
     cookies = r.cookies
     url = 'http://localhost:8000/knowledge/collect/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
-    payload = {'id': 2}
+    payload = {'id': 5}
     r = requests.post(url, data=payload, headers = headers, cookies = cookies)
     fp = open("test.html",'w')
     fp.write(r.text)
@@ -30,7 +30,7 @@ def testgetcollect():
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)
     cookies = r.cookies
-    url = 'http://localhost:8000/knowledge/listcollect/?number=5&page=1'
+    url = 'http://localhost:8000/knowledge/listcollect/?number=3&page=0'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {}
     r = requests.get(url, data=payload, headers = headers, cookies = cookies)

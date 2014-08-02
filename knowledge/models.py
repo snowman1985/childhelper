@@ -40,4 +40,6 @@ def get_knowls_byids(ids):
     if not ids:
         return None
     knowls =Knowledge.objects.filter(id__in = ids)
-    return knowls
+    knowls_list = list(knowls)
+    knowls_list.sort(key=lambda knowll: -ids.index(knowll.id))
+    return knowls_list
