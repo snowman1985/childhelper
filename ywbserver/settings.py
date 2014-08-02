@@ -64,6 +64,7 @@ INSTALLED_APPS = (
     'imagekit',
     'photos',
     'registration',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = (
