@@ -26,7 +26,7 @@ class Head(models.Model):
                                       options={'quality': 60})
 
 
-def getheadurl(user):
+def getheadurl(user, type):
     if not user:
         full_url = ''.join([settings.DOMAIN, '/media/head/default.jpg'])
     heads = Head.objects.filter(username = user.username)
@@ -34,7 +34,10 @@ def getheadurl(user):
         full_url = ''.join([settings.DOMAIN, '/media/head/default.jpg'])
     else:
         head = list(heads)[-1]
-        full_url = ''.join([settings.DOMAIN, head.head_thumbnail.url])
+        if type == 'orig':
+            full_url = ''.join([settings.DOMAIN, head.head_orig.url])
+        if type == 'thumbnail':
+            full_url = ''.join([settings.DOMAIN, head.head_thumbnail.url])
     return full_url
 
 
