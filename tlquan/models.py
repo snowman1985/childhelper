@@ -44,13 +44,13 @@ def circletopiclist_encode(topics):
         t = {}
         t['topicid'] = topic.id
         t['from_user'] = topic.from_user.username
-        t['headurl'] = getheadurl(topic.from_user)
+        t['headurl'] = getheadurl(topic.from_user, 'thumbnail')
         t['content'] = topic.content
         t['comments_num'] = len(TlComment.objects.filter(topic = topic))
         t['create_time'] = topic.create_time.strftime('%Y-%m-%d %H:%M:%S' )
         t['update_time'] = topic.update_time.strftime('%Y-%m-%d %H:%M:%S' )
         rets.append(t)
-    return json.dumps(rets, ensure_ascii=False)
+    return rets
 
 
 def circletopic_encode(topics):
@@ -67,5 +67,5 @@ def circletopic_encode(topics):
         t['comments'] = comments_encode(TlComment.objects.filter(topic = topic))
         print(t)
         rets.append(t)
-    return json.dumps(rets, ensure_ascii=False)
+    return rets
     

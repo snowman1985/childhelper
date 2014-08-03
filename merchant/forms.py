@@ -71,7 +71,8 @@ class PostCommercialForm(forms.ModelForm):
 class UserDemandRespForm(forms.ModelForm):
     class Meta:
         model = UserDemandResp
-        fields = ('userdemand', 'respcontent', 'resp_time', 'resp_merchantuser_id')
+        #fields = ('userdemand', 'respcontent', 'resp_time', 'resp_merchantuser_id')
+        fields = ('respcontent',)
         widgets = {
             'respcontent':forms.Textarea(attrs={'placeholder':'请输入您的接单信息', 'class':'form-control', 'rows':1, 'required':'required'})
         }

@@ -1,4 +1,4 @@
-from datetime import datetime
+#from datetime import datetime
 from django.shortcuts import render, redirect
 from django.views.generic import FormView
 from django.views.generic.base import TemplateView
@@ -17,6 +17,8 @@ from django.utils.decorators import method_decorator
 from django.db import connections
 from django.contrib.gis.geos import Point, fromstr
 from baby.models import *
+import datetime
+
 # Create your views here.
 
 
@@ -262,6 +264,15 @@ class FindHelpView(TemplateView):
 def resp_user_demand_view(request):
     if request.method == "POST":
         respform = UserDemandRespForm(request.POST)
-        respform.resp_time = datetime.utcnow().replace(tzinfo=utc)
-        respform.resp_merchant_id = request.user.id
-        #respform.userdemand = 
+        print("respform:", respform)
+        if respform.is_valid():
+            userdemandid = request.POST["userdemandid"]
+            resp = respform.save(commit=False)
+            print("###resp:", resp.respcontent)
+            print("###resp userdemand id:", userdemandid)
+            resp.resp_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+            resp.resp_merchantuser_id = request.user.id
+            resp.userdemand = UserDemand.objects.get(id=userdemandid)
+            resp.save()
+            return HttpResponseRedirect('/merchant/findhelp/') 
+        return HttpResponseRedirect('/merchant/findhelp/')
