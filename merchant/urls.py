@@ -29,5 +29,6 @@ urlpatterns = patterns('',
     url(r'^commercials/', CommercialListView.as_view(), name='commercials'),
     url(r'^about$', about, name='about'),
     url(r'^findhelp/', FindHelpView.as_view(), name='findhelp'),
+    url(r'^resp_user_demand/', resp_user_demand_view),
 )
 

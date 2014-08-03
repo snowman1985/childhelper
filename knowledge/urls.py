@@ -13,4 +13,5 @@ urlpatterns = patterns('',
     url(r'^listcollect/',views.list_collection, name='list_collection'),
     url(r'^webview/$', views.web_view),
     url(r'^list/', views.list_knowledge, name='knowledge list view'),
+    url(r'^cancel/',views.cancelknowl, name='cancelknowl'),
 )

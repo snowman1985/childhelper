@@ -33,6 +33,12 @@ class UserDemand(models.Model):
     content = models.CharField(max_length=2000)
     pub_time = models.DateTimeField()
 
+class UserDemandResp(models.Model):
+    userdemand = models.ForeignKey(UserDemand)
+    respcontent = models.CharField(max_length=1000)
+    resp_time = models.DateTimeField()
+    resp_merchantuser_id = models.IntegerField()
+
 def get_merchant_nearby(latitude, longitude, number=1, distance = 50000):
     point = fromstr("POINT(%s %s)" % (longitude, latitude))
     nearby = Merchant.objects.using('ywbwebdb').filter(point__distance_lt=(point, D(km=int(distance)/1000)))

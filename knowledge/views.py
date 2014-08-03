@@ -136,7 +136,7 @@ def list_knowledge(request):
 def collectknowl(request):
     try:
         if request.method != 'POST':
-                return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
             return HttpResponse(json_serialize(status = 'PARAM_NULL'))
@@ -155,6 +155,32 @@ def collectknowl(request):
             if knowlid not in collection_record.collections:
                 collection_record.collections.append(knowlid)
                 collection_record.save()
+            return HttpResponse(json_serialize(status = 'OK'))
+    except Exception as e:
+        print('Exception:' + str(e))
+        return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))
+
+@csrf_exempt
+def cancelknowl(request):
+    try:
+        if request.method != 'POST':
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        if not request.POST.get('id'):
+            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        knowlid = request.POST.get('id')
+        knowlid = int(knowlid)
+        try:
+            collection_record = KnowledgeCollection.objects.get(user = user)
+        except KnowledgeCollection.DoesNotExist:
+            return HttpResponse(json_serialize(status='NOT_COLLECTED'))
+        else:
+            if knowlid not in collection_record.collections:
+                return HttpResponse(json_serialize(status='NOT_COLLECTED'))
+            collection_record.collections.remove(knowlid)
+            collection_record.save()
             return HttpResponse(json_serialize(status = 'OK'))
     except Exception as e:
         print('Exception:' + str(e))

@@ -67,4 +67,13 @@ class PostCommercialForm(forms.ModelForm):
 
             #'valid_date':forms.TextInput(attrs={'placeholder':datetime.date.today().strftime("%m/%d/%Y"), 'id':'validdatepicker'}) 
             }
+
+class UserDemandRespForm(forms.ModelForm):
+    class Meta:
+        model = UserDemandResp
+        fields = ('userdemand', 'respcontent', 'resp_time', 'resp_merchantuser_id')
+        widgets = {
+            'respcontent':forms.Textarea(attrs={'placeholder':'请输入您的接单信息', 'class':'form-control', 'rows':1, 'required':'required'})
+        }
+
     

@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render, redirect
 from django.views.generic import FormView
 from django.views.generic.base import TemplateView
@@ -251,8 +252,16 @@ class FindHelpView(TemplateView):
         print("##findhelp:",merchant)
         #context['findhelpers'] = HelpFinder.objects.all()
         context['findhelpers'] = UserDemand.objects.all()
+        context['respform'] = UserDemandRespForm()
         return context
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FindHelpView, self).dispatch(*args, **kwargs)
+
+def resp_user_demand_view(request):
+    if request.method == "POST":
+        respform = UserDemandRespForm(request.POST)
+        respform.resp_time = datetime.utcnow().replace(tzinfo=utc)
+        respform.resp_merchant_id = request.user.id
+        #respform.userdemand = 

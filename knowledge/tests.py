@@ -6,14 +6,35 @@ def testcollect():
     password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    loginurl = 'http://localhost:8000/user/login/'
+    loginurl = 'http://localhost:80/user/login/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)
     cookies = r.cookies
-    url = 'http://localhost:8000/knowledge/collect/'
+    url = 'http://localhost:80/knowledge/collect/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
-    payload = {'id': 2}
+    payload = {'id': 23}
+    r = requests.post(url, data=payload, headers = headers, cookies = cookies)
+    fp = open("test.html",'w')
+    fp.write(r.text)
+    fp.close()
+    logouturl = 'http://localhost:80/user/logout/'
+    requests.post(logouturl, cookies = cookies)
+    return r.text
+
+def testcancel():
+    username = 'shentest1'
+    password = 'shentest1'
+    username = http.urlsafe_base64_encode(username.encode()).decode()
+    password = http.urlsafe_base64_encode(password.encode()).decode()
+    loginurl = 'http://localhost:80/user/login/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'username': username, 'password': password}
+    r = requests.post(loginurl, data=payload, headers = headers)
+    cookies = r.cookies
+    url = 'http://localhost:80/knowledge/cancel/'
+    headers = {'content-Type': 'application/x-www-form-urlencoded'}
+    payload = {'id': 23}
     r = requests.post(url, data=payload, headers = headers, cookies = cookies)
     fp = open("test.html",'w')
     fp.write(r.text)
@@ -62,6 +83,7 @@ def testgetknowledges():
 #print(testgetdata())
 #print(testgetknowledges())
 #print(testcollect())
-print(testgetcollect())
+print(testcancel())
+#print(testgetcollect())
 
 
