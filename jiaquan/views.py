@@ -93,7 +93,7 @@ def get_topicbyid_webview(request, userid, topicid):
     except Exception as e:
             return HttpResponse("INVALID_USERID")
     context = {}
-    context['headurl'] = getheadurl(topic.from_user)
+    context['headurl'] = getheadurl(topic.from_user, 'thumbnail')
     context['topic'] = topic
     context['current_uid'] = userid
     t = get_template("jiaquan/topic_webview.html")
@@ -158,7 +158,7 @@ def circletopiclist_encode(topics):
         t = {}
         t['topicid'] = topic.id
         t['from_user'] = topic.from_user.username
-        t['headurl'] = getheadurl(topic.from_user)
+        t['headurl'] = getheadurl(topic.from_user, 'thumbnail')
         t['content'] = topic.content
         t['JiaComments_num'] = len(JiaComment.objects.filter(topic = topic))
         t['create_time'] = topic.create_time.strftime('%Y-%m-%d %H:%M:%S' )
