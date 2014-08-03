@@ -20,6 +20,7 @@ from django.core.paginator import Paginator, EmptyPage
 from jiaquan import *
 from datetime import *
 from users.utils import *
+from utils.serialization import *
 from photos.models import *
 from .models import *
 import json, base64, traceback, random, datetime, time
@@ -30,17 +31,17 @@ def topic_webview(request, userid, topicid):
     try:
         topic = TlTopic.objects.get(id = topicid)
         if not topic:
-            return HttpResponse("INVALID_TOPICID")
+            return HttpResponse(json_serialize(status = 'INVALID_TOPICID'))
     except Exception as e:
-        return HttpResponse("INVALID_TOPICID")
+        return HttpResponse(json_serialize(status = 'EXCEPTION'))
     try:
         user = User.objects.get(id=userid)
         if not topic:
-            return HttpResponse("INVALID_USERID")
+            return HttpResponse(json_serialize(status = 'INVALID_USERID'))
     except Exception as e:
-            return HttpResponse("INVALID_USERID")
+            return HttpResponse(json_serialize(status = 'EXCEPTION'))
     context = {}
-    context['headurl'] = getheadurl(topic.from_user)
+    context['headurl'] = getheadurl(topic.from_user, 'thumbnail')
     context['topic'] = topic
     context['current_uid'] = userid
     t = get_template("tlquan/topic_webview.html")
@@ -52,7 +53,7 @@ def addcommentwebview(request, current_uid, topicid):
     userid = int(current_uid)
     user = User.objects.get(id=userid)
     if not user:
-        return HttpResponse('INVALID_USER')
+        return HttpResponse(json_serialize(status = 'INVALID_USER'))
     topic = TlTopic.objects.get(id=int(topicid))
     timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
     comment = TlComment(from_user = user, topic=topic, content=request.POST['comment'], create_time=timenow)
@@ -64,13 +65,13 @@ def addcommentwebview(request, current_uid, topicid):
 def post_topic(request):
     try:
         if request.method != 'POST':
-            return HttpResponse('HTTP_METHOD_ERR')
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
-            return HttpResponse('AUTH_FAILED')
+            return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
         content = request.POST.get('content')
         if not content:
-            return HttpResponse('CONTENT_NULL')
+            return HttpResponse(json_serialize(status = 'CONTENT_NULL'))
         timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
         age= (int((date.today().year - user.baby.birthday.year)))
         topic = TlTopic(from_user = user,
@@ -83,20 +84,20 @@ def post_topic(request):
             photo_data = request.FILES['photo']
             photo = Photo(topic = topic, photo_orig = photo_data)
             ret = photo.save()
-        return HttpResponse('OK')
+        return HttpResponse(json_serialize(status = 'OK'))
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION'))
 
 
 ##获取帖子列表
 def list_topic(request):
     try:
         if request.method != 'GET':
-            return HttpResponse('HTTP_METHOD_ERR')
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         (authed, username, password, user) = auth_user(request)
         if not authed or not user:
-            return HttpResponse('AUTH_FAILED')
+            return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
         #获取page参数
         page = request.GET.get('page')
         if not page:
@@ -115,16 +116,12 @@ def list_topic(request):
         topics = TlTopic.objects.filter(age = age)
         paginator = Paginator(topics, number)
         try:
-            return HttpResponse(circletopiclist_encode(paginator.page(page)))
+            return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(page))))
         except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
-            return HttpResponse(circletopiclist_encode(paginator.page(paginator.num_pages)))
+            return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(paginator.num_pages))))
     except Exception as e:
-        return HttpResponse("EXCEPTION")
-
-
-
-
-
+        print(str(e))
+        return HttpResponse(json_serialize(status = 'EXCEPTION'))
 
 
