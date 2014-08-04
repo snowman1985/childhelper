@@ -11,6 +11,7 @@ from django.views.generic import  TemplateView
 from .models import *
 from baby.models import *
 from users.utils import *
+from utils.serialization import *
 import hashlib, time, random, json
 # Create your views here.
 
@@ -18,15 +19,17 @@ import hashlib, time, random, json
 def web_view(request):
     try:
         if request.method != 'GET':
-            return HttpResponse('HTTP_METHOD_ERR')
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
+        if not request.GET.get('id'):
+            return HttpResponseNotFound(json_serialize(status = 'NOT_FOUND'))
         cid = request.GET.get('id')
         if cid == None or cid =="":
-            return HttpResponseNotFound("Not Found")
+            return HttpResponseNotFound(json_serialize(status = 'NOT_FOUND'))
         cid = int(cid)
         try:
             o = Commercial.objects.using("ywbwebdb").get(id = cid)
         except Commercial.DoesNotExist:
-            return HttpResponseNotFound("Not Found")
+            return HttpResponseNotFound(json_serialize(status = 'NOT_FOUND'))
         t = get_template('commercial/commercial.html')
         c = {}
         c['commercial_commercialid'] = o.id
@@ -47,7 +50,7 @@ def web_view(request):
 def list_commercial(request):
     try:
         if request.method != 'GET':
-            return HttpResponse('HTTP_METHOD_ERR')
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         cnumber = int(request.GET.get('number'))
         if  cnumber == None:
             cnumber = 2
@@ -63,21 +66,21 @@ def list_commercial(request):
                 commercials = getcommerciallist(baby, cnumber)
                 return HttpResponse(json.dumps(commercials, ensure_ascii=False))
             except Baby.DoesNotExist:
-                return HttpResponse('BABY_NULL')
+                return HttpResponse(json_serialize(status = 'BABY_NULL'))
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))
 
 
 @csrf_exempt
 def addcomment(request, commercialid):
     try:
         if request.method != 'POST':
-            return HttpResponse('HTTP_METHOD_ERR')
+            return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
         commercial = Commercial.objects.using("ywbwebdb").get(id=int(commercialid))
         commercialcomment = CommercialComment(commercialid=commercial, comment=request.POST['commercialcomment'])
         commercialcomment.save()
         return web_view(request)
     except Exception as e:
         print('Exception:' + str(e))
-        return HttpResponse('EXCEPTION')
+        return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))

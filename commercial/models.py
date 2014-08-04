@@ -76,14 +76,14 @@ class CommercialComment(models.Model):
 
 def get_commercial_nearby(homepoint, number=1, distance = 50000):
     point = homepoint
-    nearbym = Merchant.objects.using('ywbwebdb').filter(point__distance_lt=(point, D(km=int(distance)/1000)))
+    nearbym = Merchant.objects.filter(point__distance_lt=(point, D(km=int(distance)/1000)))
     count = nearbym.count()
     if number >= count:
         #merchants = Merchant.objects.using('ywbwebdb').all()[:number-1]
         merchants = nearbym
         commercials = []
         for merchant in merchants:
-            commercial_set = Commercial.objects.using('ywbwebdb').filter(merchant = merchant)
+            commercial_set = Commercial.objects.filter(merchant = merchant)
             if len(commercial_set) >= 1:
                 commercials.append(commercial_set[0])
         return commercials
@@ -93,14 +93,14 @@ def get_commercial_nearby(homepoint, number=1, distance = 50000):
         merchants = random.sample(list(merchants), number)
         commercials = []
         for merchant in merchants:
-            commercial_set = Commercial.objects.using('ywbwebdb').filter(merchant = merchant)
+            commercial_set = Commercial.objects.filter(merchant = merchant)
             if len(commercial_set) >= 1:
                 commercials.append(commercial_set[0])
         return commercials
 
 
 def get_commercial_random(number=1):
-    all = Commercial.objects.using('ywbwebdb').all()
+    all = Commercial.objects.all()
     count = all.count()
     if number >= count:
         return list(all[:count])
