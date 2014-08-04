@@ -45,11 +45,13 @@ def test_get_topiclist():
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
     loginurl = 'http://localhost:8000/user/login/'
+    #loginurl = 'http://www.yangwabao.com:80/user/login/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)
     cookies = r.cookies
-    url = 'http://localhost:8000/tlquan/listtopic/'
+    url = 'http://localhost:8000/tlquan/listtopic/?page=1&number=3'
+    #url = 'http://www.yangwabao.com:80/tlquan/listtopic/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     r = requests.get(url, data=payload, headers = headers, cookies = cookies)
     fp = open("test.html",'w')

@@ -114,12 +114,14 @@ def list_topic(request):
         baby = user.baby
         age= (int((date.today().year - user.baby.birthday.year)))
         topics = TlTopic.objects.filter(age = age)
-        paginator = Paginator(topics, number)
+        topics_list = list(topics)
+        topics_list.sort(key=lambda topic:topic.update_time)
+        paginator = Paginator(topics_list, number)
         try:
-            return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(page))))
+            return HttpResponse(json_serialize(status = 'OK', result = {'userid':user.id, 'topics':circletopiclist_encode(paginator.page(page))}))
         except EmptyPage:
             # If page is out of range (e.g. 9999), deliver last page of results.
-            return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(paginator.num_pages))))
+            return HttpResponse(json_serialize(status = 'OK', result = {'userid':user.id, 'topics':circletopiclist_encode(paginator.page(paginator.num_pages))}))
     except Exception as e:
         print(str(e))
         return HttpResponse(json_serialize(status = 'EXCEPTION'))
