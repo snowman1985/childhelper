@@ -115,7 +115,7 @@ def list_topic(request):
         age= (int((date.today().year - user.baby.birthday.year)))
         topics = TlTopic.objects.filter(age = age)
         topics_list = list(topics)
-        topics_list.sort(key=lambda topic:topic.update_time)
+        topics_list.sort(key=lambda topic:topic.update_time, reverse=True)
         paginator = Paginator(topics_list, number)
         try:
             return HttpResponse(json_serialize(status = 'OK', result = {'userid':user.id, 'topics':circletopiclist_encode(paginator.page(page))}))
