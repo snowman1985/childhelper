@@ -48,8 +48,10 @@ def user_login(request):
         user = authenticate(username=username, password=password)
         if user is not None:  
             login(request, user)
+            print("##success login")
             return HttpResponse(json_serialize(status = 'OK'))
-        else:  
+        else: 
+            print("##auth failed") 
             return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
     except Exception as e:
         log.error(e)

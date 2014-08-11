@@ -20,6 +20,7 @@ your own URL patterns for these views instead.
 from django.conf.urls import patterns
 from django.conf.urls import include
 from django.conf.urls import url
+from django.db.transaction import non_atomic_requests
 from django.views.generic.base import TemplateView
 
 from registration.backends.default.views import ActivationView
@@ -38,7 +39,7 @@ urlpatterns = patterns('',
                            ActivationView.as_view(),
                            name='registration_activate'),
                        url(r'^register/$',
-                           RegistrationView.as_view(),
+                           non_atomic_requests()(RegistrationView.as_view()),
                            name='registration_register'),
                        url(r'^register/complete/$',
                            TemplateView.as_view(template_name='registration/registration_complete.html'),
