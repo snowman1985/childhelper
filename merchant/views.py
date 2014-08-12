@@ -276,3 +276,20 @@ def resp_user_demand_view(request):
             resp.save()
             return HttpResponseRedirect('/merchant/findhelp/') 
         return HttpResponseRedirect('/merchant/findhelp/')
+
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from users.utils import auth_user
+
+#@require_POST
+@csrf_exempt
+def publish_findhelp(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user:
+        return HttpResponse('AUTH_FAILED')
+
+    content = request.POST.get('content', '')
+    pub_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+    userdemand = UserDemand(user=request.user, content=content, pub_time=pub_time)
+    userdemand.save()
+    return HttpResponse({'status':'OK'})
