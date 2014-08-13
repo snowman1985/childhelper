@@ -101,12 +101,15 @@ def list_commercial(request):
 @csrf_exempt
 def addcomment(request, commercialid):
     try:
+        print("#####add comment method:", request.method)
         if request.method != 'POST':
+            print("####here")
             return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
-        commercial = Commercial.objects.using("ywbwebdb").get(id=int(commercialid))
+        commercial = Commercial.objects.get(id=int(commercialid))
         commercialcomment = CommercialComment(commercialid=commercial, comment=request.POST['commercialcomment'])
         commercialcomment.save()
-        return web_view(request)
+        #return web_view(request)
+        return mobile_web_view(request, commercialid)
     except Exception as e:
         print('Exception:' + str(e))
         return HttpResponse(json_serialize(status = 'EXCEPTION', result = str(e)))
