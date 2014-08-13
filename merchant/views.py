@@ -283,6 +283,7 @@ from users.utils import auth_user
 
 #@require_POST
 @csrf_exempt
+@require_POST
 def publish_findhelp(request):
     (authed, username, password, user) = auth_user(request)
     if not authed or not user:
