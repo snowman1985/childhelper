@@ -16,8 +16,12 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db import connections
 from django.contrib.gis.geos import Point, fromstr
+from django.utils.safestring import SafeString
 from baby.models import *
+from utils.serialization import *
 import datetime
+import json
+
 
 # Create your views here.
 
@@ -101,8 +105,6 @@ class RegisterView(RegistrationView):
         merchant.latitude = form_reg.cleaned_data['latitude']
         merchant.description = form_reg.cleaned_data['description']
         merchant.name = form_reg.cleaned_data['name']
-        print("###merchant name:", merchant.name)
-        print("####merchange save")
         merchant.save()
         return super(RegisterView, self).form_valid(form_reg)
 
@@ -291,4 +293,21 @@ def publish_findhelp(request):
     pub_time = datetime.datetime.utcnow().replace(tzinfo=utc)
     userdemand = UserDemand(user=request.user, content=content, pub_time=pub_time)
     userdemand.save()
-    return HttpResponse({'status':'OK'})
+    return HttpResponse(json_serialize(status='OK'))
+
+def surrounding_view(request):
+    longitude = request.GET['longitude']
+    latitude = request.GET['latitude']
+    distance = request.GET['distance']
+    merp = point = fromstr("POINT(%s %s)" % (longitude, latitude))
+    userpoints = []
+    nearbyusers = Baby.objects.filter(homepoint__distance_lt=(merp, D(km=int(distance)/1000)))
+    for user in nearbyusers:
+        x = user.homepoint.x
+        y = user.homepoint.y
+        userpoints.append({'x':x,'y':y})
+#     context['merx']=merp.x
+#     context['mery']=merp.y
+#     context['distance']=distance
+#     context['userpoints']=SafeString(json.dumps(userpoints))
+    return HttpResponse(SafeString(json.dumps(userpoints)))

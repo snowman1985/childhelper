@@ -31,5 +31,6 @@ urlpatterns = patterns('',
     url(r'^findhelp/', FindHelpView.as_view(), name='findhelp'),
     url(r'^resp_user_demand/', resp_user_demand_view),
     url(r'^publish_findhelp/', publish_findhelp),
+    url(r'^getsurr/', surrounding_view),
 )
 
