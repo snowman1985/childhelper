@@ -65,6 +65,7 @@ INSTALLED_APPS = (
     'photos',
     'registration',
     'south',
+    'personality',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -276,13 +276,10 @@ def getinfo(request):
 
 @csrf_exempt
 def upload_head(request):
-    print("upload head request:")
-    print(request)
     try :
         if request.method != 'POST':
             return HttpResponse(json_serialize(status = "HTTP_METHOD_ERR", result = {}))
         (authed, username, password, user) = auth_user(request)
-        print(user)
         if not authed or not user:
             return HttpResponse(json_serialize(status = "AUTH_FAILED", result = {}))
         head_data = request.FILES['portrait']
