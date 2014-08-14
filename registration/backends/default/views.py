@@ -57,9 +57,8 @@ class RegistrationView(BaseRegistrationView):
                 merchant = Merchant(user = new_user)
                 merchant.city = form_reg.cleaned_data['city']
                 merchant.address = form_reg.cleaned_data['address']
-                print("longitude is :" + form_reg.cleaned_data['longitude'])
                 merchant.longitude = float(form_reg.cleaned_data['longitude'])
-                merchant.latitude = form_reg.cleaned_data['latitude']
+                merchant.latitude = float(form_reg.cleaned_data['latitude'])
                 merchant.description = form_reg.cleaned_data['description']
                 #user.save()
                 merchant.save()
