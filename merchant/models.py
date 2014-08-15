@@ -61,3 +61,16 @@ def get_merchant_random(number=1):
 def store_commercial_history(commercialid, merchantid, babyid):
     commercialhistory = CommercialHistory(commercial_id=commercialid, merchant_id=merchantid, baby_id=babyid)
     commercialhistory.save(using="ywbwebdb") 
+
+def userdemandslist_encode(userdemands):
+    rets = []
+    number = len(list(userdemands))
+    for i in range(0, number):
+        demand = userdemands[i]
+        t = {}
+        t['userdemand_userid'] = demand.user.id
+        t['userdemand_id'] = demand.id
+        t['content'] = demand.content
+        t['publish_time'] = demand.pub_time.strftime('%Y-%m-%d %H:%M:%S') 
+        rets.append(t)
+    return rets
