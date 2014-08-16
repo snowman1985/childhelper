@@ -158,6 +158,7 @@ def circletopiclist_encode(topics):
         t = {}
         t['topicid'] = topic.id
         t['from_user'] = topic.from_user.username
+        t['from_user_id'] = topic.from_user.id
         t['headurl'] = getheadurl(topic.from_user, 'thumbnail')
         t['content'] = topic.content
         t['JiaComments_num'] = len(JiaComment.objects.filter(topic = topic))

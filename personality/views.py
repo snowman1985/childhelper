@@ -10,6 +10,9 @@ from jiaquan.models import JiaTopic
 from merchant.models import UserDemand, userdemandslist_encode
 from utils.serialization import *
 from users.utils import *
+from tlquan.models import TlTopic, TlComment
+from jiaquan.models import JiaTopic, JiaComment
+from photos.models import getheadurl
 
 # Create your views here.
 
@@ -28,6 +31,24 @@ def get_page_and_number(request):
 
      return page, number
 
+def topiclist_encode(topics_list):
+    rets = []
+    number = len(topics_list)
+    for i in range(0, number):
+        topic = topics_list[i]
+        t = {}
+        t['topicid'] = topic.id
+        t['from_user'] = topic.from_user.username
+        t['from_user_id'] = topic.from_user.id
+        t['headurl'] = getheadurl(topic.from_user, 'thumbnail')
+        t['content'] = topic.content
+        if isinstance(topic, TlTopic):
+            t['comment_num'] = len(TlComment.objects.filter(topic=topic))
+        elif isinstance(topic, JiaTopic):
+            t['comment_num'] = len(JiaComment.objects.filter(topic=topic))
+        rets.append(t)
+    return rets
+
 @login_required
 @require_GET
 def list_person_topics(request):
@@ -44,9 +65,9 @@ def list_person_topics(request):
         topics_list.sort(key=lambda topic:topic.update_time, reverse=True)
         paginator = Paginator(topics_list, number)
         try:
-            return HttpResponse(json_serialize(status='OK', result={'topics':circletopiclist_encode(paginator.page(page))}))
+            return HttpResponse(json_serialize(status='OK', result={'topics':topiclist_encode(paginator.page(page))}))
         except EmptyPage:
-            return HttpResponse(json_serialize(status='OK', result={'topics':circletopiclist_encode(paginator.page(paginator.num_pages))}))
+            return HttpResponse(json_serialize(status='OK', result={'topics':topiclist_encode(paginator.page(paginator.num_pages))}))
     except Exception as e:
         import traceback
         traceback.print_stack()
