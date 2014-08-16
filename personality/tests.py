@@ -42,6 +42,6 @@ def testpersontopics():
     fp.close()
     return r.text
 
-#print(testpersondemands())
+print(testpersondemands())
 print("=================")
 print(testpersontopics())
