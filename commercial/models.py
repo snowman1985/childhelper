@@ -3,9 +3,11 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D # alias for Distance
 from django.utils.timezone import utc
+from django.contrib.auth.models import User 
 import random, datetime
 from merchant.models import *
 from ywbserver.settings import *
+import datetime
 # Create your models here.
 
 # class commercial(models.Model):
@@ -70,8 +72,10 @@ class Commercial(models.Model):
 
 
 class CommercialComment(models.Model):
+    from_user = models.ForeignKey(User)
     commercialid = models.ForeignKey(Commercial)
     comment = models.CharField(max_length=5000)
+    create_time = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc))
 
 
 def get_commercial_nearby(homepoint, number=1, distance = 50000):

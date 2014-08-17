@@ -12,6 +12,7 @@ from utils.serialization import *
 from users.utils import *
 from tlquan.models import TlTopic, TlComment
 from jiaquan.models import JiaTopic, JiaComment
+from commercial.models import CommercialComment
 from photos.models import getheadurl
 
 # Create your views here.
@@ -46,6 +47,22 @@ def topiclist_encode(topics_list):
             t['comment_num'] = len(TlComment.objects.filter(topic=topic))
         elif isinstance(topic, JiaTopic):
             t['comment_num'] = len(JiaComment.objects.filter(topic=topic))
+        rets.append(t)
+    return rets
+
+def person_comments_encode(comments_list):
+    rets = []
+    number = len(comments_list)
+    for i in range(0, number):
+        comment = comments_list[i]
+        t = {}
+        t['commentid'] = comment.id
+        t['from_user'] = comment.from_user.username
+        if isinstance(comment, TlComment) or isinstance(comment, JiaComment):
+            t['comment'] = comment.content
+        elif isinstance(comment, CommercialComment):
+            t['comment'] = comment.comment
+        t['create_time'] = comment.create_time.strftime('%Y-%m-%d %H:%M:%S')
         rets.append(t)
     return rets
 
@@ -97,4 +114,30 @@ def list_person_userdemand(request):
     except Exception as e:
         print("##exception",e)
         return HttpResponse(json_serialize(status='EXCEPTION'))
-      
+
+@login_required
+@require_GET
+def list_person_comments(request):
+    try:
+        print("####pserson comments")
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse("AUTH_FAILED")
+
+        page, number = get_page_and_number(request)
+        mycommercialcomments = CommercialComment.objects.filter(from_user=user)
+        mytlcomments = TlComment.objects.filter(from_user=user)
+        myjiacomments = JiaComment.objects.filter(from_user=user)
+       
+        mycomments_list = list(mycommercialcomments) + list(mytlcomments) + list(myjiacomments)
+        mycomments_list.sort(key=lambda comment: comment.create_time, reverse=True)
+        paginator = Paginator(mycomments_list, number)
+        try:
+            return HttpResponse(json_serialize(status='OK', result={'comments':person_comments_encode(paginator.page(page))}))
+        except EmptyPage:
+            return HttpResponse(json_serialize(status='OK', result={'comments':person_comments_encode(paginator.page(paginator.num_pages))}))
+
+    except Exception as e:
+        print("###exception e:",e)
+        return HttpResponse(json_serialize(status='EXCEPTION'))
+  

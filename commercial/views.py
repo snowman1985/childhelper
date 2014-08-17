@@ -101,12 +101,15 @@ def list_commercial(request):
 @csrf_exempt
 def addcomment(request, commercialid):
     try:
-        print("#####add comment method:", request.method)
         if request.method != 'POST':
-            print("####here")
             return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
+        (authed, username, password, user) = auth_user(request)
+        if not authed or not user:
+            return HttpResponse(json_serialize(status = 'AUTH_FAILED'))
         commercial = Commercial.objects.get(id=int(commercialid))
-        commercialcomment = CommercialComment(commercialid=commercial, comment=request.POST['commercialcomment'])
+        timenow = datetime.datetime.utcnow().replace(tzinfo=utc)
+        
+        commercialcomment = CommercialComment(commercialid=commercial, comment=request.POST['commercialcomment'], from_user=user, create_time=timenow)
         commercialcomment.save()
         #return web_view(request)
         return mobile_web_view(request, commercialid)
