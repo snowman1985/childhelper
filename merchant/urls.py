@@ -32,5 +32,6 @@ urlpatterns = patterns('',
     url(r'^resp_user_demand/', resp_user_demand_view),
     url(r'^publish_findhelp/', publish_findhelp),
     url(r'^getsurr/', surrounding_view),
+    url(r'^user_demand_related_merchant/', user_demand_related_merchant_view),
 )
 

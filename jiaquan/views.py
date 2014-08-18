@@ -158,7 +158,6 @@ def circletopiclist_encode(topics):
         t = {}
         t['topicid'] = topic.id
         t['from_user'] = topic.from_user.username
-        t['from_user_id'] = topic.from_user.id
         t['headurl'] = getheadurl(topic.from_user, 'thumbnail')
         t['content'] = topic.content
         t['JiaComments_num'] = len(JiaComment.objects.filter(topic = topic))
@@ -283,16 +282,13 @@ def list_topic_nearby(request):
             number = 5
         else:
             number = int(request.GET.get('number'))
-        if not request.GET.get('longitude'):
-            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+        paginator = None
+        if not request.GET.get('longitude') or not request.GET.get('latitude'):
+            paginator = get_nearby_point_topic(user.baby.homepoint, page_size = number)
         else:
             longitude = request.GET.get('longitude')
-        if not request.GET.get('latitude'):
-            return HttpResponse(json_serialize(status = 'PARAM_NULL'))
-        else:
             latitude = request.GET.get('latitude')
-        print(request.GET)
-        paginator = get_nearby_topic(longitude = longitude, latitude = latitude, page_size = number)
+            paginator = get_nearby_topic(longitude = longitude, latitude = latitude, page_size = number)
         try:
             return HttpResponse(json_serialize(status = 'OK', result = circletopiclist_encode(paginator.page(page))))
         except EmptyPage:

@@ -277,7 +277,8 @@ def resp_user_demand_view(request):
             return HttpResponseRedirect('/merchant/findhelp/') 
         return HttpResponseRedirect('/merchant/findhelp/')
 
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
+
 from django.views.decorators.csrf import csrf_exempt
 from users.utils import auth_user
 
@@ -311,3 +312,37 @@ def surrounding_view(request):
 #     context['distance']=distance
 #     context['userpoints']=SafeString(json.dumps(userpoints))
     return HttpResponse(SafeString(json.dumps(userpoints)))
+
+RELATED_MERCHANT_NUM = 10
+ITER_NUM=10
+def merchant_encode(merchant_list):
+    rets = []
+    number = len(merchant_list)
+    for i in range(0, number):
+        merchant = merchant_list[i]
+        t = {}
+        t['name'] = merchant.name
+        t['city'] = merchant.city
+        t['address'] = merchant.address
+        t['description'] = merchant.description
+        rets.append(t)
+    return rets 
+
+@require_GET
+def user_demand_related_merchant_view(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user: 
+        return HttpResponse('AUTH_FAILED')    
+
+    total = Merchant.objects.count()
+    if total < 10:
+       allmerchants = Merchant.objects.all()
+       return HttpResponse(json_serialize(status='OK', result={'merchants':merchant_encode(list(allmerchants))}))
+    babyhomepoint = user.baby.homepoint
+    distance = 5000
+    for i in range(ITER_NUM):
+        qset=Merchant.objects.filter(point__distance_lt=(babyhomepoint, D(km=int(distance)/1000)))
+        if qset.count() >= 10:
+            break
+        distance *= 2
+    return HttpResponse(json_serialize(status='OK', result={'merchants':merchant_encode(list(qset))}))
