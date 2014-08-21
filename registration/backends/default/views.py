@@ -22,8 +22,8 @@ class RegistrationView(BaseRegistrationView):
         return context
 
 
-    def form_valid(self, request, form):                                             
-        form.cleaned_data['username'] = form.cleaned_data['email']                       
+    def form_valid(self, request, form):
+        form.cleaned_data['username'] = form.cleaned_data['email']
         print(form.cleaned_data)                                                         
         new_user = self.register(request, **form.cleaned_data)                           
         success_url = self.get_success_url(request, new_user)
