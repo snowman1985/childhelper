@@ -11,6 +11,7 @@ import dbarray
 class Merchant(models.Model):
     user = models.OneToOneField(User)
     name = models.CharField(max_length=100)
+    phonenumber = models.CharField(max_length=20)
     city = models.CharField(max_length=20)
     address = models.CharField(max_length=100)
     longitude = models.FloatField(null=True)

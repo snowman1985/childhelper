@@ -371,4 +371,16 @@ def collectuserdemand(request):
             collection_record.collections.append(userdemandid)
             collection_record.save()
         return HttpResponse(json_serialize(status = 'OK'))
-     
+    
+class MerchantDetailView(TemplateView):
+    template_name = "merchant/merchant_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(MerchantDetailView, self).get_context_data(**kwargs)
+
+        merchantid = kwargs["merchant_id"]
+        commercialid = kwargs["commercial_id"]
+        context["merchant"] = merchant = Merchant.objects.get(id=merchantid)
+        context["pic"] = Commercial.objects.get(id=commercialid).photo.url
+        #print("##merchant:",merchant)
+        return context
