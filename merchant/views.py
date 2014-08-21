@@ -346,3 +346,29 @@ def user_demand_related_merchant_view(request):
             break
         distance *= 2
     return HttpResponse(json_serialize(status='OK', result={'merchants':merchant_encode(list(qset))}))
+
+@csrf_exempt
+def collectuserdemand(request):
+    if request.method != 'POST':
+        return HttpResponse(json_serialize(status = 'HTTP_METHOD_ERR'))
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user: 
+        return HttpResponse('AUTH_FAILED') 
+    if not request.POST.get('id'):
+        return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+    userdemandid = request.POST.get('id')
+    userdemandid = int(userdemandid)
+    try:
+        collection_record = UserDemandCollection.objects.get(user = user)
+    except UserDemandCollection.DoesNotExist:
+        new_collection_record = UserDemandCollection(user = user, collections = [])
+        new_collection_record.collections.append(userdemandid)
+        new_collection_record.save()
+        return HttpResponse(json_serialize(status = 'OK'))
+
+    else:
+        if userdemandid not in collection_record.collections:
+            collection_record.collections.append(userdemandid)
+            collection_record.save()
+        return HttpResponse(json_serialize(status = 'OK'))
+     

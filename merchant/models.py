@@ -5,6 +5,7 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D
 import random
+import dbarray
 # Create your models here.
 
 class Merchant(models.Model):
@@ -32,6 +33,10 @@ class UserDemand(models.Model):
     user = models.ForeignKey(User)
     content = models.CharField(max_length=2000)
     pub_time = models.DateTimeField()
+
+class UserDemandCollect(models.Model):
+    user = models.OneToOneField(User)
+    collections = dbarray.IntegerArrayField()
 
 class UserDemandResp(models.Model):
     userdemand = models.ForeignKey(UserDemand)
