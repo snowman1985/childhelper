@@ -33,6 +33,7 @@ class HelpFinder(models.Model):
 class UserDemand(models.Model):
     user = models.ForeignKey(User)
     content = models.CharField(max_length=2000)
+    validdate = models.DateTimeField(null=True)
     pub_time = models.DateTimeField()
 
 class UserDemandCollect(models.Model):

@@ -291,8 +291,14 @@ def publish_findhelp(request):
         return HttpResponse('AUTH_FAILED')
 
     content = request.POST.get('content', '')
+    validdatestr = request.POST.get('validdate',None)
+        
     pub_time = datetime.datetime.utcnow().replace(tzinfo=utc)
-    userdemand = UserDemand(user=request.user, content=content, pub_time=pub_time)
+    if validdatestr:
+        print("##validdatestr:", validdatestr)
+        userdemand = UserDemand(user=request.user, content=content, pub_time=pub_time, validdate=validdatestr)
+    else:
+        userdemand = UserDemand(user=request.user, content=content, pub_time=pub_time)
     userdemand.save()
     return HttpResponse(json_serialize(status='OK'))
 
