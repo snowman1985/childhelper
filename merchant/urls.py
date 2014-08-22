@@ -33,5 +33,6 @@ urlpatterns = patterns('',
     url(r'^publish_findhelp/', publish_findhelp),
     url(r'^getsurr/', surrounding_view),
     url(r'^user_demand_related_merchant/', user_demand_related_merchant_view),
+    url(r'^merchantdetail/(?P<merchant_id>\d+)/(?P<commercial_id>\d+)/', MerchantDetailView.as_view(), name='merchant detail'),
 )
 

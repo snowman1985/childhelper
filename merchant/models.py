@@ -11,6 +11,7 @@ import dbarray
 class Merchant(models.Model):
     user = models.OneToOneField(User)
     name = models.CharField(max_length=100)
+    phonenumber = models.CharField(max_length=20)
     city = models.CharField(max_length=20)
     address = models.CharField(max_length=100)
     longitude = models.FloatField(null=True)
@@ -32,6 +33,7 @@ class HelpFinder(models.Model):
 class UserDemand(models.Model):
     user = models.ForeignKey(User)
     content = models.CharField(max_length=2000)
+    validdate = models.DateTimeField(null=True)
     pub_time = models.DateTimeField()
 
 class UserDemandCollect(models.Model):
