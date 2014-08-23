@@ -385,8 +385,40 @@ class MerchantDetailView(TemplateView):
         context = super(MerchantDetailView, self).get_context_data(**kwargs)
 
         merchantid = kwargs["merchant_id"]
-        commercialid = kwargs["commercial_id"]
+        #commercialid = kwargs["commercial_id"]
         context["merchant"] = merchant = Merchant.objects.get(id=merchantid)
-        context["pic"] = Commercial.objects.get(id=commercialid).photo.url
+        #context["pic"] = Commercial.objects.get(id=commercialid).photo.url
         #print("##merchant:",merchant)
         return context
+
+@require_GET
+def mobile_single_userdemand(request):
+    (authed, username, password, user) = auth_user(request)
+    if not authed or not user: 
+        return HttpResponse('AUTH_FAILED') 
+    if not request.GET.get('userdemandid'):
+        return HttpResponse(json_serialize(status = 'PARAM_NULL'))
+    
+    userdemandid = request.GET.get('userdemandid')
+    userdemand = UserDemand.objects.get(id=userdemandid)
+    t = {}
+    t['content'] = userdemand.content
+    if userdemand.validdate:
+        t['validdate'] = userdemand.validdate.strftime("%Y-%m-%d")
+
+    t['publish_time'] = userdemand.pub_time.strftime('%Y-%m-%d %H:%M:%S')
+    respset = userdemand.userdemandresp_set.all()
+    respmerchant = []
+    for resp in respset:
+       merchantuserid = resp.resp_merchantuser_id 
+       merchantuser = User.objects.get(id=merchantuserid)
+       merchant = merchantuser.merchant
+       item = {}
+       item['merchant_name'] = merchant.name
+       item['merchant_response'] = resp.respcontent
+       item['response_time'] = resp.resp_time.strftime('%Y-%m-%d %H:%M:%S')
+       item['merchant_url'] = merchant.geturl()
+       print("##merchant url:", merchant.geturl())
+       respmerchant.append(item)
+    t['response_merchants'] = respmerchant
+    return HttpResponse(json_serialize(status='OK', result={'userdemanddetail':t}))

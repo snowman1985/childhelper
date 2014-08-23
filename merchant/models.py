@@ -20,6 +20,9 @@ class Merchant(models.Model):
     point = models.PointField(null=True)
     objects = models.GeoManager()
 
+    def geturl(self):
+        return "http://www.yangwabao.com/merchant/merchantdetail/" + str(self.id) + "/"
+
 class CommercialHistory(models.Model):
     commercial_id = models.IntegerField()
     merchant_id = models.IntegerField()
@@ -79,5 +82,9 @@ def userdemandslist_encode(userdemands):
         t['userdemand_id'] = demand.id
         t['content'] = demand.content
         t['publish_time'] = demand.pub_time.strftime('%Y-%m-%d %H:%M:%S') 
+        respcount = demand.userdemandresp_set.count()
+        t['response_state'] = 'yes' if respcount > 0 else 'no'
+        t['response_num'] = respcount
+        
         rets.append(t)
     return rets
