@@ -67,13 +67,13 @@ def test_single_userdemand():
     password = 'shentest1'
     username = http.urlsafe_base64_encode(username.encode()).decode()
     password = http.urlsafe_base64_encode(password.encode()).decode()
-    loginurl = 'http://localhost:8000/user/login/'
+    loginurl = 'http://localhost:80/user/login/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'username': username, 'password': password}
     r = requests.post(loginurl, data=payload, headers = headers)
     cookies = r.cookies
 
-    url = 'http://localhost:8000/merchant/mobile_single_userdemand/?userdemandid=1'
+    url = 'http://localhost:80/merchant/mobile_single_userdemand/?userdemandid=1'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
     payload = {'content':"测试移动端帮你找修改后"}
     r = requests.get(url, data=None, headers = None, cookies = cookies)

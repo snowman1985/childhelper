@@ -405,6 +405,8 @@ def mobile_single_userdemand(request):
     t['content'] = userdemand.content
     if userdemand.validdate:
         t['validdate'] = userdemand.validdate.strftime("%Y-%m-%d")
+    else:
+        t['validdate'] = ""
 
     t['publish_time'] = userdemand.pub_time.strftime('%Y-%m-%d %H:%M:%S')
     respset = userdemand.userdemandresp_set.all()
