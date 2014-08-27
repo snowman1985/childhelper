@@ -34,7 +34,8 @@ def testpublishfindhelpvaliddate():
 
     url = 'http://localhost:8000/merchant/publish_findhelp/'
     headers = {'content-Type': 'application/x-www-form-urlencoded'}
-    payload = {'content':"测试移动端帮你找有效时间", 'validdate':"2016-08-20"}
+    #payload = {'content':"测试移动端帮你找有效时间", 'validdate':"2016-08-20"}
+    payload = {'content':"测试移动端帮你找有效时间"}
     r = requests.post(url, data=payload, headers = headers, cookies = cookies)
     fp = open("test.html",'w')
     fp.write(r.text)
@@ -84,8 +85,8 @@ def test_single_userdemand():
 
 #print(testpublishfindhelp())
 print("===========================")
-#print(testpublishfindhelpvaliddate())
+print(testpublishfindhelpvaliddate())
 print("===========================")
-print(test_single_userdemand())
+#print(test_single_userdemand())
 #print(testrelatedmerchant())
 # Create your tests here.

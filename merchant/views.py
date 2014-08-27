@@ -292,13 +292,10 @@ def publish_findhelp(request):
 
     content = request.POST.get('content', '')
     validdatestr = request.POST.get('validdate',None)
+    classify = request.POST.get('classify', None)
         
     pub_time = datetime.datetime.utcnow().replace(tzinfo=utc)
-    if validdatestr:
-        print("##validdatestr:", validdatestr)
-        userdemand = UserDemand(user=request.user, content=content, pub_time=pub_time, validdate=validdatestr)
-    else:
-        userdemand = UserDemand(user=request.user, content=content, pub_time=pub_time)
+    userdemand = UserDemand(user=request.user, content=content, pub_time=pub_time, validdate=validdatestr, classify=classify)
     userdemand.save()
     return HttpResponse(json_serialize(status='OK'))
 
