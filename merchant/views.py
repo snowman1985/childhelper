@@ -159,6 +159,24 @@ class CommercialListView(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(CommercialListView, self).dispatch(*args, **kwargs)
+
+class CommercialPromotionView(TemplateView):
+    template_name = 'merchant/commercial_promotion.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CommercialPromotionView, self).get_context_data(**kwargs)
+        context['login_form'] = LoginForm()
+        user = self.request.user
+        merchant = user.merchant
+        clist = []
+        clist = Commercial.objects.filter(merchant = merchant)
+        context['commercial_list'] = clist
+        context['merchant'] = Merchant.objects.filter(user__username = self.request.user.username)[0]
+        return context
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CommercialPromotionView, self).dispatch(*args, **kwargs)
     
     
 class CommercialPostView(FormView):

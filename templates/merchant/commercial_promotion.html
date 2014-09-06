@@ -1,0 +1,38 @@
+{%extends "merchant/merchant_home.html"%}
+
+{%block home_content%}
+<div class="container">
+  <div class="row row-offcanvas-right">
+    <div class="col-md-8">
+      <div class="list-group">
+        {%for commercial in commercial_list%}
+           <div class="row" style="border-bottom:1px solid #f5f5f5">
+             <div class="col-md-2">
+               {% if commercial.photo %}
+  		  <img src="/media/{{commercial.photo}}" class="img-responsive" style="margin-top:10px; max-width:80px; max-height:80px" alt="Responsive image">
+               {% endif %}
+             </div>
+	     <div class="col-md-2">          
+             <p>{{commercial.title}}</h4>
+             </div>
+             <div class="col-md-2">
+               <a class="btn btn-success btn-large" style="margin-top:10px" href="/merchant/commercials/promotioneffect/{{commercial.id}}/">已推送</a>
+             </div>
+             <div class="col-md-2">
+               <a class="btn btn-success btn-large" style="margin-top:10px" href="#">已接单</a>
+             </div>
+             <div class="col-md-2">
+               <a class="btn btn-success btn-large" style="margin-top:10px" href="#">评论</a>
+             </div>
+             <div class="col-md-2">
+               <a class="btn btn-success btn-large" style="margin-top:10px" href="#">周边用户</a> 
+             </div>
+           </div>
+        {%endfor%}
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock%}
+
+
