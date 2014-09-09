@@ -13,7 +13,11 @@
           <p style="font-size:14px; text-align:center" class="text-info">{{baby.username}}</p>
         </div>
         <div class="col-md-5" style="margin-top:35px">
-          <p style="font-size:16px;" class="text-info">推送时间：2014-08-20 10:20:30</p>
+          {% if baby.haveseen %}
+          <p style="font-size:16px;" class="text-info">推送时间：{{baby.seentime}}</p>
+          {% else %}
+          <p style="font-size:16px;" class="text-info">推送时间：等待推送中 </p>
+          {% endif %}
         </div>
         <div class="col-md-4" style="margin-top:35px">
           <p style="font-size:16px;" class="text-success">距离：{{baby.distance}}m</p>

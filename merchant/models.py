@@ -27,6 +27,7 @@ class CommercialHistory(models.Model):
     commercial_id = models.IntegerField()
     merchant_id = models.IntegerField()
     baby_id = models.IntegerField()
+    displaytime = models.DateTimeField()
 
 class HelpFinder(models.Model):
     appuser_id = models.IntegerField()
@@ -70,7 +71,8 @@ def get_merchant_random(number=1):
         return random.sample(list(all), number)
     
 def store_commercial_history(commercialid, merchantid, babyid):
-    commercialhistory = CommercialHistory(commercial_id=commercialid, merchant_id=merchantid, baby_id=babyid)
+    display_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+    commercialhistory = CommercialHistory(commercial_id=commercialid, merchant_id=merchantid, baby_id=babyid, displaytime=display_time)
     commercialhistory.save(using="ywbwebdb") 
 
 def userdemandslist_encode(userdemands):

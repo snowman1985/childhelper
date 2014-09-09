@@ -257,9 +257,11 @@ class PromotionView(TemplateView):
             print("###baby x:",baby.homepoint.x,"###baby y:",baby.homepoint.y)
             babydistance = min(int(haversine(merchant.longitude, merchant.latitude, baby.homepoint.x, baby.homepoint.y)*1000), 5000)
             haveseen = False
+            seentime = ""
             if baby in seenbabys:
                 haveseen = True
-            userpoints.append({'x':baby.homepoint.x, 'y':baby.homepoint.y, 'distance':babydistance, 'username':baby.user.username, 'haveseen':haveseen})
+                seentime = seenhistory[seenbabys.index(baby)]
+            userpoints.append({'x':baby.homepoint.x, 'y':baby.homepoint.y, 'distance':babydistance, 'username':baby.user.username, 'haveseen':haveseen, 'seentime':seentime})
         context['userpoints'] = userpoints
         return context
 
