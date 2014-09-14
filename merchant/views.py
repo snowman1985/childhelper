@@ -265,6 +265,27 @@ class PromotionView(TemplateView):
         context['userpoints'] = userpoints
         return context
 
+class CommercialReceiptView(TemplateView):
+    template_name = 'merchant/commercial_receipt.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CommercialReceiptView, self).get_context_data(**kwargs)
+        commercialid = kwargs["commercial_id"]
+        commercial = Commercial.objects.get(id=commercialid)
+        receipts = CommercialReceipt.objects.filter(commercial=commercial)
+
+        context['merchant'] = merchant = Merchant.objects.filter(user__username = self.request.user.username)[0]
+        userpoints = []
+        merp = fromstr("POINT(%s %s)" % (merchant.longitude, merchant.latitude))
+
+        for receipt in receipts:
+            baby = receipt.from_user.baby
+            babydistance = min(int(haversine(merchant.longitude, merchant.latitude, baby.homepoint.x, baby.homepoint.y)*1000), 5000)
+            userpoints.append({'x':baby.homepoint.x, 'y':baby.homepoint.y, 'distance':babydistance, 'username':baby.user.username, 'receive_time':receipt.receive_time})
+        context['userpoints'] = userpoints
+        return context
+
+
 class FindHelpView(TemplateView):
     template_name = 'merchant/findhelp.html'
 

@@ -77,6 +77,11 @@ class CommercialComment(models.Model):
     comment = models.CharField(max_length=5000)
     create_time = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc))
 
+class CommercialReceipt(models.Model):
+    from_user = models.ForeignKey(User)
+    commercial = models.ForeignKey(Commercial)
+    receive_time = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc))
+
 
 def get_commercial_nearby(homepoint, number=1, distance = 50000):
     point = homepoint
