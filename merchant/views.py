@@ -285,6 +285,29 @@ class CommercialReceiptView(TemplateView):
         context['userpoints'] = userpoints
         return context
 
+class CommercialCommentView(TemplateView):
+    template_name = 'merchant/commercial_comment.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CommercialCommentView, self).get_context_data(**kwargs)
+        print("#####i am here")
+        commercialid = kwargs['commercial_id']
+        commercial = Commercial.objects.get(id=commercialid)
+        comments = CommercialComment.objects.filter(commercialid = commercial)
+    
+        context['merchant'] = merchant = Merchant.objects.filter(user__username = self.request.user.username)[0]
+        commercialcomments = []
+        
+        for comment in comments:
+            baby = comment.from_user.baby
+            xdist = baby.homepoint.x if baby.homepoint else  0
+            ydist = baby.homepoint.y if baby.homepoint else  0
+            babydistance = min(int(haversine(merchant.longitude, merchant.latitude, xdist, ydist)*1000), 5000)
+            commercialcomments.append({'distance':babydistance, 'username':comment.from_user.username, 'create_time':comment.create_time, 'content':comment.comment})
+
+        context['commercialcomments'] = commercialcomments
+        return context
+
 
 class FindHelpView(TemplateView):
     template_name = 'merchant/findhelp.html'
