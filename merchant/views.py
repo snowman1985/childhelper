@@ -452,6 +452,17 @@ class MerchantDetailView(TemplateView):
         #print("##merchant:",merchant)
         return context
 
+class MerchantCommentsView(TemplateView):
+    template_name = "merchant/merchant_comment.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(MerchantCommentsView, self).get_context_data(**kwargs)
+        user = {"username": "sg", "comment":"这个商家信誉不错", "pub_time":"2014-09-21 10:21:21"}
+        userpoints = []
+        userpoints.append(user)
+        context["userpoints"] = userpoints
+        return context
+
 @require_GET
 def mobile_single_userdemand(request):
     (authed, username, password, user) = auth_user(request)
