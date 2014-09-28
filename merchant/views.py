@@ -457,10 +457,25 @@ class MerchantCommentsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(MerchantCommentsView, self).get_context_data(**kwargs)
-        user = {"username": "sg", "comment":"这个商家信誉不错", "pub_time":"2014-09-21 10:21:21"}
+        haopinguser = {"username": "sg", "comment":"这个商家信誉不错", "pub_time":"2014-09-21 10:21:21"}
+        medianuser = {"username":"xzh", "comment":"这个商家很一般啊", "pub_time":"2014-09-22 12:22:23"}
+        baduser = {"username":"we", "comment":"这个商家发货很慢啊", "pub_time": "2014-09-23 20:20:20"}
+        
         userpoints = []
-        userpoints.append(user)
+        haopinguserpoints = []
+        medianuserpoints = []
+        baduserpoints = []
+        haopinguserpoints.append(haopinguser)
+        medianuserpoints.append(medianuser)
+        baduserpoints.append(baduser)
+
+        userpoints.extend(haopinguserpoints)
+        userpoints.extend(medianuserpoints)
+        userpoints.extend(baduserpoints) 
         context["userpoints"] = userpoints
+        context["haopinguserpoints"] = haopinguserpoints
+        context["medianuserpoints"] = medianuserpoints
+        context["baduserpoints"] = baduserpoints
         return context
 
 @require_GET
