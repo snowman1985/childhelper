@@ -41,6 +41,9 @@ class UserDemand(models.Model):
     validdate = models.DateTimeField(null=True)
     pub_time = models.DateTimeField()
 
+    def getresp(self):
+        return self.userdemandresp_set.all()
+
 class UserDemandCollect(models.Model):
     user = models.OneToOneField(User)
     collections = dbarray.IntegerArrayField()
