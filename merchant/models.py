@@ -6,6 +6,8 @@ from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D
 import random
 import dbarray
+import datetime
+from django.utils.timezone import utc
 # Create your models here.
 
 class Merchant(models.Model):
@@ -53,16 +55,17 @@ class UserDemandResp(models.Model):
 
 def get_merchant_nearby(latitude, longitude, number=1, distance = 50000):
     point = fromstr("POINT(%s %s)" % (longitude, latitude))
-    nearby = Merchant.objects.using('ywbwebdb').filter(point__distance_lt=(point, D(km=int(distance)/1000)))
+    #nearby = Merchant.objects.using('ywbwebdb').filter(point__distance_lt=(point, D(km=int(distance)/1000)))
+    nearby = Merchant.objects.filter(point__distance_lt=(point, D(km=int(distance)/1000)))
     count = nearby.count()
     if number >= count:
         print('appmerchant nearby %f,%f is not enough' % (latitude, longitude))
-        return list(Merchant.objects.using('ywbwebdb').all()[:number-1])
+        return list(Merchant.objects.all()[:number-1])
     else:
         return random.sample(list(nearby), number)
 
 def get_merchant_random(number=1):
-    all = Merchant.objects.using('ywbwebdb').all()
+    all = Merchant.objects.all()
     count = all.count()
     if number >= count:
         print('appmerchant random  is not enough')
@@ -73,7 +76,8 @@ def get_merchant_random(number=1):
 def store_commercial_history(commercialid, merchantid, babyid):
     display_time = datetime.datetime.utcnow().replace(tzinfo=utc)
     commercialhistory = CommercialHistory(commercial_id=commercialid, merchant_id=merchantid, baby_id=babyid, displaytime=display_time)
-    commercialhistory.save(using="ywbwebdb") 
+    #commercialhistory.save(using="ywbwebdb") 
+    commercialhistory.save() 
 
 def userdemandslist_encode(userdemands):
     rets = []
