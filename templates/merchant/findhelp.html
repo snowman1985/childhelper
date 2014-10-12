@@ -29,6 +29,13 @@
               <div style="padding-top:10px">
               <button class="btn btn-success" type="submit" name="respuserdemand" style="float:right">接单</button>
               </div>
+              <div style="padding-top:30px">
+                {% for resp  in help.getresp %}
+                  {% if resp.resp_merchantuser_id == merchant.user.id %}
+                <p style="font-size:16px; font-style:italic" class="text-info">{{resp.respcontent}}</p>
+                  {% endif %}
+                {% endfor %} 
+              </div>
             </div>
             
           </form> 
