@@ -133,7 +133,9 @@ class MerchantHomeView(TemplateView):
             userpoints.append({'x':baby.homepoint.x, 'y':baby.homepoint.y})
 
         context['userpoints'] = userpoints
-        context['pushcount']=CommercialHistory.objects.filter(merchant_id=merchant.id).count()
+        #context['pushcount']=CommercialHistory.objects.filter(merchant_id=merchant.id).count()
+        context['danzicount']=UserDemand.objects.count()
+        context['promotioncount']=Commercial.objects.filter(merchant = merchant).count()
         
         return context
 
@@ -306,6 +308,7 @@ class CommercialCommentView(TemplateView):
             commercialcomments.append({'distance':babydistance, 'username':comment.from_user.username, 'create_time':comment.create_time, 'content':comment.comment})
 
         context['commercialcomments'] = commercialcomments
+        context['respform']=CommercialCommentRespForm()
         return context
 
 
