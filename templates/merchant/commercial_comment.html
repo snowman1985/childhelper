@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="row" style="border-bottom:1px solid #f5f5f5">
-        <form class="form-horizontal" rol="form" action="#" method="post" enctype="multipart/form-data">{%csrf_token%}
+        <form class="form-horizontal" rol="form" action="/merchant/commercials/commentresponse/{{commercial_id}}/{{comment.id}}/" method="post" enctype="multipart/form-data">{%csrf_token%}
         <div class="col-md-offset-2 col-md-8">
            {{respform.respcontent}}
            <button class="btn btn-success" type="submit" style="float:right">回复</button>
