@@ -30,7 +30,9 @@
       </div>
       <div class="col-md-offset-2" style="padding-top:20px; border-bottom:1px solid #f5f5f5">
           {% for resp in comment.commentobj.getresp %}
+            {% if resp.resp_merchantuser_id == merchant.user.id %}
           <p style="font-size:14px" class="text-success">{{resp.respcontent}}</p>
+            {% endif %}
           {% endfor %}
       </div>
   {% endfor %}
