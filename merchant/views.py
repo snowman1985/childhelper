@@ -305,7 +305,7 @@ class CommercialCommentView(TemplateView):
             xdist = baby.homepoint.x if baby.homepoint else  0
             ydist = baby.homepoint.y if baby.homepoint else  0
             babydistance = min(int(haversine(merchant.longitude, merchant.latitude, xdist, ydist)*1000), 5000)
-            commercialcomments.append({'distance':babydistance, 'username':comment.from_user.username, 'create_time':comment.create_time, 'content':comment.comment, 'id':comment.id})
+            commercialcomments.append({'distance':babydistance, 'username':comment.from_user.username, 'create_time':comment.create_time, 'content':comment.comment, 'id':comment.id, 'commentobj':comment})
 
         context['commercialcomments'] = commercialcomments
         context['respform']=CommercialCommentRespForm()
