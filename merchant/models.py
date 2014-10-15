@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point, fromstr
 from django.contrib.gis.measure import D
+#from commercial.models import CommercialComment
 import random
 import dbarray
 import datetime
@@ -52,6 +53,14 @@ class UserDemandCollect(models.Model):
 
 class UserDemandResp(models.Model):
     userdemand = models.ForeignKey(UserDemand)
+    respcontent = models.CharField(max_length=1000)
+    resp_time = models.DateTimeField()
+    resp_merchantuser_id = models.IntegerField()
+
+
+from commercial.models import CommercialComment
+class CommercialCommentResp(models.Model):
+    commercial_comment = models.ForeignKey(CommercialComment)
     respcontent = models.CharField(max_length=1000)
     resp_time = models.DateTimeField()
     resp_merchantuser_id = models.IntegerField()

@@ -133,7 +133,9 @@ class MerchantHomeView(TemplateView):
             userpoints.append({'x':baby.homepoint.x, 'y':baby.homepoint.y})
 
         context['userpoints'] = userpoints
-        context['pushcount']=CommercialHistory.objects.filter(merchant_id=merchant.id).count()
+        #context['pushcount']=CommercialHistory.objects.filter(merchant_id=merchant.id).count()
+        context['danzicount']=UserDemand.objects.count()
+        context['promotioncount']=Commercial.objects.filter(merchant = merchant).count()
         
         return context
 
@@ -303,9 +305,12 @@ class CommercialCommentView(TemplateView):
             xdist = baby.homepoint.x if baby.homepoint else  0
             ydist = baby.homepoint.y if baby.homepoint else  0
             babydistance = min(int(haversine(merchant.longitude, merchant.latitude, xdist, ydist)*1000), 5000)
-            commercialcomments.append({'distance':babydistance, 'username':comment.from_user.username, 'create_time':comment.create_time, 'content':comment.comment})
+            commercialcomments.append({'distance':babydistance, 'username':comment.from_user.username, 'create_time':comment.create_time, 'content':comment.comment, 'id':comment.id, 'commentobj':comment})
 
         context['commercialcomments'] = commercialcomments
+        context['respform']=CommercialCommentRespForm()
+        print("##commercial id:",commercialid)
+        context['commercial_id']=commercialid
         return context
 
 
@@ -340,6 +345,18 @@ def resp_user_demand_view(request):
             resp.save()
             return HttpResponseRedirect('/merchant/findhelp/') 
         return HttpResponseRedirect('/merchant/findhelp/')
+
+def commercial_comment_response_view(request, commercial_id, comment_id):
+    if request.method == "POST":
+        respform = CommercialCommentRespForm(request.POST)
+        resp = respform.save(commit=False)
+        print("##commecial comment resp:", resp.respcontent)
+        resp.resp_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+        resp.resp_merchantuser_id = request.user.id
+        resp.commercial_comment = CommercialComment.objects.get(id=comment_id)
+        resp.save()
+        return HttpResponseRedirect('/merchant/commercials/comments/'+str(commercial_id)+'/')
+    return HttpResponseRedirect('/merchant/commercials/comments/'+str(commercial_id)+'/')
 
 from django.views.decorators.http import require_POST, require_GET
 

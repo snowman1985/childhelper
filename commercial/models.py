@@ -76,6 +76,11 @@ class CommercialComment(models.Model):
     commercialid = models.ForeignKey(Commercial)
     comment = models.CharField(max_length=5000)
     create_time = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc))
+    
+    def getresp(self):
+        print("###in commercial comment getresp")
+        return self.commercialcommentresp_set.all()
+
 
 class CommercialReceipt(models.Model):
     from_user = models.ForeignKey(User)
