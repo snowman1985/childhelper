@@ -35,7 +35,7 @@ def refresh_tlquan_news(request):
                 ret = news.save()
             except Exception as e:
                 print('Exception:' + str(e))
-            print(news.title)
+            break
     return HttpResponse(json_serialize(status = 'EXCEPTION'))
 
 

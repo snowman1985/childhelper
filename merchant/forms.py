@@ -55,9 +55,10 @@ class LoginForm(forms.Form):
 class PostCommercialForm(forms.ModelForm):
     class Meta:
         model = Commercial
-        fields = ('title', 'valid_date_from', 'valid_date_end', 'content', 'photo')
+        fields = ('title', 'kechengclass', 'valid_date_from', 'valid_date_end', 'content', 'photo')
         widgets = {
             'title':forms.TextInput(attrs={'placeholder':'请输入您的标题' , ' class':'form-control','required':'required','autofocus':'autofocus'}),
+            'kechengclass':forms.Select(attrs={'class':'form-control'}),
             'content':forms.Textarea(attrs={'placeholder':'请输入您要发布的具体信息' , ' class':'form-control','required':'required'}), 
             #'valid_date_from':forms.TextInput(attrs={'placeholder':datetime.date.today().strftime("%m/%d/%Y"), 'class':'form-control', 'id':'validdatepicker_from', 'style':'width:40%; display:inline'}), 
             'valid_date_from':forms.TextInput(attrs={ 'class':'form-control', 'id':'validdatepicker_from', 'style':'width:40%; display:inline'}), 
