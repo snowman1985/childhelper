@@ -1,0 +1,178 @@
+{% extends "merchant/base.html" %}
+
+
+{% block customcss %}
+    <!-- Custom styles for this template -->
+    <link href="/static/css/offcanvas.css?v=1" rel="stylesheet">
+    {%block innercustomcss %}
+    {%endblock %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+      <div class="row row-offcanvas row-offcanvas-right">
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+          <div class="list-group menu">
+            <a href="/merchant/home/" class="list-group-item list-group-item-info homenav">主页</a>
+            <a href="/merchant/commercials/post/" class="list-group-item list-group-item-info homenav">发布信息</a>
+            <a href="/merchant/commercials/list/" class="list-group-item list-group-item-info homenav">已发信息</a>
+            <a href="/merchant/password_change/", class="list-group-item list-group-item-info homenav">修改密码</a>
+            <a href="#" class="list-group-item list-group-item-info homenav">帮助</a>
+          </div>
+          <div class="panel panel-success">
+            <div class="panel-heading">
+              <div class="panel-title"><span class="glyphicon glyphicon-certificate"></span>  {{merchant.name}}</div>
+            </div>
+            <div class="panel-body">
+              <p style="font-style:italic; font-family:PMingLiU">所在城市：{{merchant.city}}</p>
+              <p style="font-style:italic; font-family:PMingLiU">{{merchant.address}}</p>
+              <p style="font-style:italic; font-family:PMingLiU">{{merchant.description}}</p>
+              <p style="font-style:italic; font-family:PMingLiU">注册日期：{{merchant.user.date_joined | date}}</p>
+            </div>
+          </div>
+        </div><!--/span-->
+
+	{% block home_content %}
+
+        <div class="col-xs-12 col-sm-9">
+          <p class="pull-right visible-xs">
+            <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <div class="row">
+	    <!-- <div class="col-3 col-sm-3 col-lg-3 col-xs-3 col-md-3">
+		<a href="/merchant/commercials/list">
+    		  <div class="jumbotron" style="display:block; text-align:center;background-color:#43CD80;">
+		    <span>
+		      <span class="glyphicon glyphicon-globe" style="color:white"></span>
+  		      <h2 style="color:white">已发布 {{bpost_count}}</h2>
+		    </span>
+		  </div>
+                </a>
+            </div> --><!--/span-->
+	    <div class="col-4 col-sm-4 col-lg-4 col-xs-4 col-md-4">
+		<a href="#">
+    		  <div class="jumbotron" style="display:block; text-align:center; background-color:#43CD80;">
+		    <span>
+		      <span class="glyphicon glyphicon-gift" style="color:white"></span>
+  		      <p style="color:white; font-size:30px; padding-top:15px">已推送 {{pushcount}}</h2>
+                      <!-- <h2 style="color:white">{{ pushcount }}</h2> -->
+		    </span>
+		  </div>
+                </a>
+            </div><!--/span-->
+	    <div class="col-4 col-sm-4 col-lg-4 col-xs-4 col-md-4">
+		<a href="#">
+    		  <div class="jumbotron" style="display:block; text-align:center;background-color:#1C86EE;">
+		    <span>
+		      <span class="glyphicon glyphicon-user" style="color:white"></span>
+  		      <p style="color:white; font-size:30px; padding-top:15px">用户 {{ userpoints | length }}</h2>
+		    </span>
+		  </div>
+                </a>
+            </div><!--/span-->
+
+            <div class="col-4 col-sm-4 col-lg-4 col-xs-4 col-md-4">
+                <a href="/merchant/findhelp/">
+                  <div class="jumbotron" style="display:block; text-align:center;background-color:#1C86EE;">
+                    <span>
+                      <span class="glyphicon glyphicon-search" style="color:white"></span>
+                      <p style="color:white; font-size:30px; padding-top:15px">有单子 </h2>
+                    </span>
+                  </div>
+                </a>
+            </div><!--/span-->
+          </div>
+          
+
+          <div class="row">
+            <div class="col-md-offset-5">
+              <p class="text-info" style="font-size:20px; font-weight:bold">周围宝宝</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-9 col-lg-9 col-xs-9 col-md-9 col-md-offset-2">
+              <div id="map_canvas_login">
+                <!-- <p class="col-sm-3"> 周围孩子：</p><br> -->
+                <div id="loginmap"  style="width: 600px;height: 450px;overflow: hidden;margin:0;border:1px solid black"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:20px">
+            <div class="col-sm-9 col-lg-9 col-xs-9 col-md-9 col-md-offset-2">
+              <h4>系统公告</h4>
+		<div class="list-group">
+  		  <a href="#" class="list-group-item">
+    		  <h4 class="list-group-item-heading">欢迎大家来到养娃宝商家平台</h4>
+  		  </a>
+		</div>
+            </div><!--/span-->
+          </div><!--/row-->
+          
+	{% endblock %}
+          
+        </div><!--/span-->
+      </div><!--/row-->
+
+{% block customjs %}
+    <script src="/static/js/offcanvas.js"></script>
+    <script>
+      $(function(){
+        function stripTrailingSlash(str) {
+          if(str.substr(-1) == '/') {
+            return str.substr(0, str.length - 1);
+          }
+          return str;
+        }
+
+        var url = window.location.pathname;  
+        var activePage = stripTrailingSlash(url);
+
+        $('.menu a').each(function(){  
+          var currentPage = stripTrailingSlash($(this).attr('href'));
+          if (activePage == currentPage) {
+            $(this).addClass('active'); 
+          } 
+        });
+      });
+    
+    </script>
+    {%block innerjs %}
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=GLbmnUGjCe4B62dqW6l695fL"></script>
+    <script>
+      var map = new BMap.Map("loginmap");
+      map.enableScrollWheelZoom();
+      map.enableKeyboard();
+      map.enableContinuousZoom();
+      //var centerpoint = new BMap.Point(116.404, 39.915);
+      var centerpoint = new BMap.Point({{merchant.longitude}}, {{merchant.latitude}});
+      map.centerAndZoom(centerpoint, 15);
+      var marker = new BMap.Marker(centerpoint);
+      map.addOverlay(marker);
+
+      function addMarker(point) {
+        var marker = new BMap.Marker(point);
+        map.addOverlay(marker);
+        marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+      }
+      //var userpoints = [{'x':116.405, 'y':39.916}, {'x':116.403,'y':39.916}]
+
+      //for (var p in userpoints) 
+      //{
+      {% for userpoint in userpoints %}
+        //var point = new BMap.Point(userpoints[p].x, userpoints[p].y);
+        
+        var point = new BMap.Point({{userpoint.x}}, {{userpoint.y}});
+        //var point = new BMap.Point(116.31438854348, 39.972346582787);
+        addMarker(point);
+      {% endfor %}
+      //}
+
+      //var circle = new BMap.Circle(centerpoint, 5000);
+      //map.addOverlay(circle);
+      //marker.enableDragging();
+    </script>
+    {%endblock%}
+{% endblock %}
+
+{% endblock %}

@@ -1,0 +1,23 @@
+<xml>
+<ToUserName><![CDATA[{{toUser}}]]></ToUserName>
+<FromUserName><![CDATA[{{fromUser}}]]></FromUserName>
+<CreateTime>{{create_time}}</CreateTime>
+<MsgType><![CDATA[news]]></MsgType>
+<ArticleCount>{{number}}</ArticleCount>
+<Articles>
+<item>
+<Title><![CDATA[{{temperature}} {{detailinfo}}]]></Title>
+<Description><![CDATA[{{detailinfo}}]]></Description>
+<PicUrl><![CDATA[http://wjbb.cloudapp.net:8001/pic/2.jpg]]></PicUrl>
+<Url><![CDATA[http://wjbb.cloudapp.net/weixin/knowledge/22160]]></Url>
+</item>
+{% for knowl in knowls %}
+<item>
+<Title><![CDATA[{{knowl.title}}]]></Title> 
+<Description><![CDATA[{{knowl.abstract}}]]></Description>
+<PicUrl><![CDATA[{{knowl.picurl}}]]></PicUrl>
+<Url><![CDATA[{{knowl.url}}]]></Url>
+</item>
+{% endfor %}
+</Articles>
+</xml>

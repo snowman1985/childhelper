@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>Forms</title>
+</head>
+<body>
+    <h1>add knowledge</h1>
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+    <form action="" method="post" >
+    	{% csrf_token %}
+     	{{ form.as_p}}
+				<input type="submit" value="Add knowledge"/>
+    </form>
+</body>
+
+</html>
