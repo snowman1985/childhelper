@@ -60,8 +60,20 @@ import datetime
 
 
 class Commercial(models.Model):
+    KECHENG_CHOICES = (
+      ("SHUXUE", "数学"),
+      ("YINGYU", "英语"),
+      ("YUWEN", "语文"),
+      ("LISHI", "历史"),
+      ("YINYUE", "音乐"),
+      ("MEISHU", "美术"),
+      ("WULI", "物理"),
+      ("HUAXUE", "化学"),
+      ("QITA", "其他"),
+    )
     merchant = models.ForeignKey(Merchant)
     title = models.CharField(max_length=100)
+    kechengclass = models.CharField(max_length=10,choices=KECHENG_CHOICES,default="SHUXUE")
     content = models.CharField(max_length=20000)
     photo = models.ImageField(upload_to='b_photos/%Y/%m/%d', max_length=10000000, blank=True, null=True, default='b_photos/default.jpg')
     valid_date_from = models.DateField()
